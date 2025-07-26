@@ -1,5 +1,5 @@
 import dataService from "@/lib/services/data-service";
-import loginEndpoints from "@/lib/endpoints/login-endpoint";
+import loginEndpoints from "@/lib/endpoints/login-endpoints";
 
 export async function onLogin(loginReq: any) {
   const response = await dataService.post(loginEndpoints.login, loginReq);

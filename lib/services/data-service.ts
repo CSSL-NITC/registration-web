@@ -1,6 +1,13 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import toastService from "./toast-service";
 import jwtService from "./jwt-service";
+import { PUBLIC_PAGES } from "../constants/common";
+import routerService from "./router-service";
+import loginEndpoints from "../endpoints/login-endpoints";
+import {
+  DEFAULT_CONTACT_ADMIN,
+  INVALID_CREDENTIALS,
+} from "../constants/message-constants";
 
 interface AppAxiosRequestConfig extends AxiosRequestConfig {
   headers?: any;
@@ -17,7 +24,6 @@ interface HeaderParams {
   isMultipart?: boolean;
 }
 
-
 class DataService {
   private client: AxiosInstance | null = null;
 
@@ -33,17 +39,21 @@ class DataService {
       },
     });
 
-    this.client.interceptors.response.use(null, (error) => {
-      console.log("Error: ", error);
-      const expectedError =
-        error.response && error.response >= 400 && error.response < 500;
+    this.client.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const expectedError =
+          error.response && error.response >= 400 && error.response < 500;
 
-      if (!expectedError) {
-        toastService.showErrorMessage(error.response.data.message);
+        if (!expectedError) {
+          error.response.data.errors.forEach((message: string) =>
+            toastService.showErrorMessage(message)
+          );
+        }
+
+        return Promise.reject(error);
       }
-
-      return Promise.reject(error);
-    });
+    );
 
     this.client.interceptors.request.use(
       (config) => {

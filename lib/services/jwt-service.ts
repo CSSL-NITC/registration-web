@@ -24,7 +24,6 @@ class JwtService extends AppUtil.EventEmitter {
       this.emit("onRedirectLogin", "access token not found");
       return;
     }
-    console.log("this.isAuthTokenValid(accessToken): ", this.isAuthTokenValid(accessToken))
     if (this.isAuthTokenValid(accessToken)) {
       this.setAccessToken(accessToken);
       this.emit("onAutoLogin", true);

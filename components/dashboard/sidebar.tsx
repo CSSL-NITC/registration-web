@@ -16,6 +16,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
+import { SIDENAV_ITEMS, SideNavItem } from "@/lib/constants/navigation"
+import { useAuth } from "@/lib/contexts/auth-provider"
+import AppUtil from "@/lib/utils/app-utils"
 
 interface SidebarProps {
   onLogout: () => void
@@ -33,8 +36,9 @@ const navigation = [
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ]
 
-export function AdminSidebar({ onLogout, collapsed = false, onToggleCollapse }: SidebarProps) {
-  const pathname = usePathname()
+export function Sidebar({ onLogout, collapsed = false, onToggleCollapse }: SidebarProps) {
+  const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <div
@@ -72,12 +76,15 @@ export function AdminSidebar({ onLogout, collapsed = false, onToggleCollapse }: 
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href
+          {user && SIDENAV_ITEMS.filter((item: SideNavItem) => AppUtil.hasAnyPrivilege(
+            user.privileges ?? [],
+            item.privileges ?? [],
+          )).map((item) => {
+            const isActive = pathname === item.path
             return (
               <Link
-                key={item.name}
-                href={item.href}
+                key={item.title}
+                href={item.path}
                 className={cn(
                   "flex items-center text-sm font-medium rounded-lg transition-colors group",
                   collapsed ? "px-3 py-3 justify-center" : "px-3 py-2",
@@ -85,16 +92,18 @@ export function AdminSidebar({ onLogout, collapsed = false, onToggleCollapse }: 
                     ? "bg-blue-50 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
                 )}
-                title={collapsed ? item.name : undefined}
+                title={collapsed ? item.title : undefined}
               >
-                <item.icon
-                  className={cn(
-                    "h-5 w-5 flex-shrink-0",
-                    isActive ? "text-blue-800 dark:text-blue-200" : "text-gray-400 dark:text-gray-500",
-                    collapsed ? "" : "mr-3",
-                  )}
-                />
-                {!collapsed && <span className="truncate">{item.name}</span>}
+                {item.icon && (
+                  <item.icon
+                    className={cn(
+                      "h-5 w-5 flex-shrink-0",
+                      isActive ? "text-blue-800 dark:text-blue-200" : "text-gray-400 dark:text-gray-500",
+                      collapsed ? "" : "mr-3",
+                    )}
+                  />
+                )}
+                {!collapsed && <span className="truncate">{item.title}</span>}
               </Link>
             )
           })}

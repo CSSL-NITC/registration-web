@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Link from "next/link";
 import {
@@ -31,6 +31,8 @@ import cloneDeep from "lodash/cloneDeep";
 import { Activity, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useRouter } from "next/navigation";
+import { DASHBOARD_PAGE } from "@/lib/constants/common";
 
 const formSchema = z.object({
   username: z
@@ -41,9 +43,10 @@ const formSchema = z.object({
     .min(5, { message: "Password must be at least 5 charachers" }),
 });
 
-export default function AdminPage() {
+export default function Page() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const route = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,27 +56,42 @@ export default function AdminPage() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoading(true);
-    const loginRQ = { ...values };
-    loginRQ.password = getEncryptedPassword(loginRQ.password);
-    const loginRQValidate = { ...loginRQ };
-
-    if (!trim(loginRQValidate).username) {
-      toastService.showErrorMessage(INVALID_USERNAME);
-      setLoading(false);
-      return;
+  useEffect(() => {
+    if (jwtService.isUserLoggedIn()) {
+      route.push(DASHBOARD_PAGE);
+      /* setTimeout(() => {
+        window.location.reload();
+      }, 100); */
     }
+  }, []);
 
-    let response = await onLogin(loginRQ);
-    const userData = cloneDeep(response.data);
-    jwtService.setAccessToken(userData.accessToken);
-    jwtService.setRefreshToken(userData.refreshToken);
-    delete userData.accessToken;
-    delete userData.refreshToken;
-    jwtService.setLoginUser(userData);
-    jwtService.onLoginSuccess(userData);
-    setLoading(false);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setLoading(true);
+
+      const loginRQ = { ...values };
+      loginRQ.password = getEncryptedPassword(loginRQ.password);
+      const loginRQValidate = { ...loginRQ };
+
+      if (!trim(loginRQValidate).username) {
+        setLoading(false);
+        toastService.showErrorMessage(INVALID_USERNAME);
+        return;
+      }
+
+      let response = await onLogin(loginRQ);
+      const userData = cloneDeep(response.data);
+      jwtService.setAccessToken(userData.accessToken);
+      jwtService.setRefreshToken(userData.refreshToken);
+      delete userData.accessToken;
+      delete userData.refreshToken;
+      jwtService.setLoginUser(userData);
+      jwtService.onLoginSuccess(userData);
+      setLoading(false);
+    } catch (e) {
+      setLoading(false);
+      // console.error(e);
+    }
   };
 
   return (

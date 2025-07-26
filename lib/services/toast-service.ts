@@ -1,20 +1,34 @@
-import { toast } from "sonner";
+import { ExternalToast, toast } from "sonner";
 
 class ToastService {
+  private defaultSettings: ExternalToast = {
+    position: "top-right",
+  };
   showDefaultMessage = (message: string) => {
-    toast(message);
+    toast(message, {
+      ...this.defaultSettings,
+    });
   };
 
   showSuccessMessage = (message: string) => {
-    toast.success(message);
+    toast.success(message, {
+      ...this.defaultSettings,
+    });
   };
 
   showWarnMessage = (message: string) => {
-    toast.warning(message);
+    toast.warning(message, {
+      ...this.defaultSettings,
+    });
   };
 
   showErrorMessage = (message: string) => {
-    toast.error(message);
+    toast.error(message, {
+      ...this.defaultSettings,
+      style: {
+        background: "red",
+      },
+    });
   };
 }
 
