@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { RegistrationsTable } from "@/components/admin/registrations-table"
+import { RegistrationsTable } from "@/components/dashboard/registrations-table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { getRegistrations, verifyPayment, generateInvoice, generateQRCode } from "@/lib/mock-api/registrations"

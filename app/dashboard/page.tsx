@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { StatsCards } from "@/components/admin/stats-cards"
-import { RegistrationsTable } from "@/components/admin/registrations-table"
-import { QuickActions } from "@/components/admin/quick-actions"
+import { StatsCards } from "@/components/dashboard/stats-cards"
+import { RegistrationsTable } from "@/components/dashboard/registrations-table"
+import { QuickActions } from "@/components/dashboard/quick-actions"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -16,7 +16,7 @@ import type { Registration } from "@/lib/mock-api/registrations"
 import type { Company } from "@/lib/mock-api/companies"
 import type { DashboardStats } from "@/lib/mock-api/stats"
 
-export default function AdminPage() {
+export default function Page() {
   // Data states
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [registrations, setRegistrations] = useState<Registration[]>([])

@@ -4,6 +4,7 @@ import authSlice from "./slices/authSlice"
 import employeesSlice from "./slices/employeesSlice"
 import invoicesSlice from "./slices/invoicesSlice"
 import uiSlice from "./slices/uiSlice"
+import userSlice from "./slices/userSlice"
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     employees: employeesSlice,
     invoices: invoicesSlice,
     ui: uiSlice,
+    user: userSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
