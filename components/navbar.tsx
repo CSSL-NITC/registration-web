@@ -73,16 +73,16 @@ export function Navbar() {
           
           {/* Right Buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/login">
-              <Button 
-                variant="ghost" 
-                className="text-white hover:bg-white/10 hover:text-white"
-              >
-                Login
-              </Button>
-            </Link>
+          <Link href="/login">
+            <Button 
+              variant="ghost" 
+              className="relative text-white hover:border hover:border-white hover:bg-transparent hover:rounded-full"
+            >
+              <span className="relative z-10">Login</span>
+            </Button>
+          </Link>
             <Link href="#digital-investment-summit">
-              <Button className="bg-white text-[#0a1440] font-semibold rounded-full px-6 py-2 shadow transition-all duration-300 transform-gpu hover:scale-105 hover:bg-blue-100 hover:shadow-xl focus-visible:scale-105 focus-visible:shadow-xl">
+              <Button className="bg-white text-[#0a1440] font-semibold rounded-full px-6 py-2 shadow transition-all duration-300 transform-gpu hover:scale-105 hover:border hover:border-white hover:text-white hover:bg-transparent hover:shadow-xl focus-visible:scale-105 focus-visible:shadow-xl">
                 Digital Investment Summit
               </Button>
             </Link>
