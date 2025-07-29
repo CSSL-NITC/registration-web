@@ -1,4 +1,3 @@
-// components/navbar.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -6,11 +5,11 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Menu, X, ExternalLink } from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [hoveredLink, setHoveredLink] = useState<string | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,7 +41,7 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center space-x-3">
             <Image 
-              src="/NITC_LOGO.png" 
+              src="https://res.cloudinary.com/djxtjt1uf/image/upload/v1753804463/NITC-Logo-7c1f04fc_qobxl1.png" 
               alt="NITC 2025 Logo" 
               width={70} 
               height={70} 
@@ -56,15 +55,32 @@ export function Navbar() {
               <Link 
                 key={link.name}
                 href={link.href} 
-                className="text-white font-medium hover:text-blue-300 transition-colors"
+                className="relative text-white font-medium group transition-colors"
+                onMouseEnter={() => setHoveredLink(link.name)}
+                onMouseLeave={() => setHoveredLink(null)}
               >
-                {link.name}
+                <span className="relative">
+                  {link.name}
+                  <span className={`
+                    absolute left-0 -bottom-1 w-full h-0.5 bg-white
+                    transition-all duration-300 transform origin-left
+                    ${hoveredLink === link.name ? 'scale-x-100' : 'scale-x-0'}
+                  `}></span>
+                </span>
               </Link>
             ))}
           </div>
           
-          {/* Right Button - Desktop */}
-          <div className="hidden md:flex items-center">
+          {/* Right Buttons - Desktop */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link href="/login">
+              <Button 
+                variant="ghost" 
+                className="text-white hover:bg-white/10 hover:text-white"
+              >
+                Login
+              </Button>
+            </Link>
             <Link href="#digital-investment-summit">
               <Button className="bg-white text-[#0a1440] font-semibold rounded-full px-6 py-2 shadow transition-all duration-300 transform-gpu hover:scale-105 hover:bg-blue-100 hover:shadow-xl focus-visible:scale-105 focus-visible:shadow-xl">
                 Digital Investment Summit
@@ -94,13 +110,24 @@ export function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="block px-3 py-2 text-white hover:text-blue-300 hover:bg-white/10 rounded-md transition-colors"
+                  className="block px-3 py-2 text-white hover:text-blue-300 hover:bg-white/10 rounded-md transition-colors relative group"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {link.name}
+                  <span className="relative">
+                    {link.name}
+                    <span className="absolute left-3 right-3 -bottom-1 h-0.5 bg-blue-300 transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                  </span>
                 </Link>
               ))}
-              <div className="border-t border-white/20 pt-3 mt-3">
+              <div className="border-t border-white/20 pt-3 mt-3 space-y-2">
+                <Link 
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Button className="w-full bg-transparent text-white font-medium hover:bg-white/10">
+                    Login
+                  </Button>
+                </Link>
                 <Link 
                   href="#digital-investment-summit" 
                   onClick={() => setMobileMenuOpen(false)}

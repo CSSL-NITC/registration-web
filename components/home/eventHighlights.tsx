@@ -24,14 +24,14 @@ const EVENT_HIGHLIGHTS = {
     {
       id: 'speakers',
       title: "Speakers",
-      mainText: "20+",
+      mainText: "30+",
       subText: "Professionals",
       imageSrc: "/speakers.png"
     },
     {
       id: 'seats',
       title: "Seats",
-      mainText: "450+",
+      mainText: "750+",
       subText: "People",
       imageSrc: "/people.png"
     }
