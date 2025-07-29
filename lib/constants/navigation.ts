@@ -36,45 +36,45 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Companies",
     path: DashboardPages.COMPANIES,
-    privileges: [],
+    privileges: [Privileges.VIEW_COMPANIES],
     subMenuItems: [],
     icon: Building2
   },
   {
     title: "Payments",
     path: DashboardPages.PAYMENTS,
-    privileges: [],
+    privileges: [Privileges.VIEW_PAYMENTS],
     subMenuItems: [],
     icon: CreditCard,
   },
   {
     title: "QR Codes",
     path: DashboardPages.QR_CODES,
-    privileges: [],
+    privileges: [Privileges.VIEW_QR_CODES],
     subMenuItems: [],
     icon: QrCode
   },
   {
     title: "Reports",
     path: DashboardPages.REPORTS,
-    privileges: [],
+    privileges: [Privileges.VIEW_REPORTS],
     subMenuItems: [],
     icon: FileText
   },
   {
     title: "Settings",
     path: DashboardPages.SETTINGS,
-    privileges: [],
+    privileges: [Privileges.VIEW_SETTINGS],
     icon: Settings,
     subMenuItems: [
       {
         title: "Users",
-        privileges: [],
+        privileges: [Privileges.VIEW_SETTINGS_USER],
         path: DashboardPages.SETTINGS_USERS,
       },
       {
         title: "Roles",
-        privileges: [],
+        privileges: [Privileges.VIEW_SETTINGS_ROLES],
         path: DashboardPages.SETTINGS_ROLES,
       },
     ],
