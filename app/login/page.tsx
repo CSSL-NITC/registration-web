@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 import { DASHBOARD_PAGE } from "@/lib/constants/common";
 
 const formSchema = z.object({
-  username: z
+  email: z
     .string()
     .min(2, { message: "Username must be at least 2 charachters." }),
   password: z
@@ -51,7 +51,7 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -73,7 +73,7 @@ export default function Page() {
       loginRQ.password = getEncryptedPassword(loginRQ.password);
       const loginRQValidate = { ...loginRQ };
 
-      if (!trim(loginRQValidate).username) {
+      if (!trim(loginRQValidate).email) {
         setLoading(false);
         toastService.showErrorMessage(INVALID_USERNAME);
         return;
@@ -127,7 +127,7 @@ export default function Page() {
               >
                 <FormField
                   control={form.control}
-                  name="username"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-base font-medium">
