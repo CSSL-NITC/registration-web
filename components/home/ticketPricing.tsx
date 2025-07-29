@@ -52,31 +52,31 @@ export function TicketPricing() {
                 <ul className="space-y-3 text-white/90 text-xs">
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Keynote Speech
+                      Keynote Speech
                     </li>
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Keynote Presentations
+                      Keynote Presentations
                     </li>
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    CSSL National ICT Awards
+                      CSSL National ICT Awards
                     </li>
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Panel Discussion and Q&A
+                      Panel Discussion and Q&A
                     </li>
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Tea, Snacks & Lunch - Day 1, Day 2
+                      Tea, Snacks & Lunch - Day 1, Day 2
                     </li>
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Conference Tracks
+                      Conference Tracks
                     </li>
                     <li className="flex items-start">
                     <span className="w-2 h-2 bg-white rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                    Gala Dinner - Inauguration
+                      Gala Dinner - Inauguration
                     </li>
                 </ul>
                 </div>
