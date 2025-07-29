@@ -12,21 +12,29 @@ export type Privilege = {
   privilegeName: string;
   description: string;
   privilegeCategory: string;
+  privilegeModule?: PrivilegeModule; // Added missing type
   status: Status;
 };
 
 export type Status = "ACT" | "INA";
 
-export const trim = (formValues: any): any => {
-  _.keys(formValues).forEach((key: string) => {
-    if (_.isString(formValues[key])) {
-      formValues[key] = formValues[key].trim();
+// Fixed trim function - now properly handles immutability
+export const trim = <T extends Record<string, any>>(formValues: T): T => {
+  if (!formValues) return formValues;
+  
+  // Create a new object to store trimmed values
+  const result: Record<string, any> = Array.isArray(formValues) ? [...formValues] : { ...formValues };
+  
+  Object.keys(result).forEach((key: string) => {
+    if (typeof result[key] === 'string') {
+      result[key] = result[key].trim();
     }
   });
-  return formValues;
+  
+  return result as T;
 };
 
-export const matchPath = (routes: string[], matchingPath: string) => {
+export const matchPath = (routes: string[], matchingPath: string): boolean => {
   if (!matchingPath) {
     return false;
   }
@@ -74,11 +82,11 @@ class EventEmitter<T = any> {
 class AppUtil {
   static EventEmitter = EventEmitter;
 
-  static hasPrivilege(privilege: string, allPrivileges: string[]) {
+  static hasPrivilege(privilege: string, allPrivileges: string[]): boolean {
     return _.indexOf(allPrivileges, privilege.trim()) !== -1;
   }
 
-  static hasAnyPrivilege(privileges: string[], allPrivileges: string[]) {
+  static hasAnyPrivilege(privileges: string[], allPrivileges: string[]): boolean {
     let hasPrivilege = false;
 
     for (const privilege of privileges) {
@@ -93,17 +101,17 @@ class AppUtil {
 
   static filterPrivilegeByModule(
     modules: PrivilegeModule[],
-    categoryWisePrivileges: any,
-  ) {
+    categoryWisePrivileges: Record<string, Privilege[]>
+  ): PrivilegeMap {
     const filtered: PrivilegeMap = {};
 
     _.keys(categoryWisePrivileges).forEach((category) => {
       modules.forEach((reqModule) => {
-        const filteredPrivileges = -_.filter(
+        const filteredPrivileges = _.filter(
           categoryWisePrivileges[category],
-          (privilege: any) => privilege.privilegeModule == reqModule,
+          (privilege: Privilege) => privilege.privilegeModule === reqModule
         );
-        if (filteredPrivileges.length > 0) {
+        if (filteredPrivileges && filteredPrivileges.length > 0) {
           if (!filtered[category]) {
             filtered[category] = [];
           }
@@ -113,7 +121,6 @@ class AppUtil {
     });
     return filtered;
   }
-
 }
 
 export default AppUtil;

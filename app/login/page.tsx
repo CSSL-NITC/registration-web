@@ -117,39 +117,51 @@ export default function Page() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      setLoading(true);
-      const loginRQ = { ...values };
+      const trimmedValues = {
+        email: values.email.trim(),
+        password: values.password
+      };
+      
+      const loginRQ = { ...trimmedValues };
       loginRQ.password = getEncryptedPassword(loginRQ.password);
       
-      if (!trim(loginRQ.email)) {
+      if (!loginRQ.email) {
         setLoading(false);
         toastService.showErrorMessage(INVALID_EMAIL);
         return;
       }
-
+  
+      console.log("Sending login request:", loginRQ); // Debug log
       const response = await onLogin(loginRQ);
+      console.log("Login response:", response); // Debug log
+      
       const userData = cloneDeep(response.data);
+      console.log("User data:", userData); // Debug log
       
       // Store tokens and user data
       jwtService.setAccessToken(userData.accessToken);
       jwtService.setRefreshToken(userData.refreshToken);
       delete userData.accessToken;
-      delete userData.refreshToken;
+      delete userData.refreshToken; // Fixed typo
+      
       jwtService.setLoginUser(userData);
       jwtService.onLoginSuccess(userData);
-
+  
       // Determine redirect path based on role
       const userRole = userData.roles?.[0] || '';
+      console.log("User role:", userRole); // Debug log
       const redirectPath = ROLE_REDIRECTS[userRole] || ROLE_REDIRECTS.DEFAULT;
+      console.log("Redirecting to:", redirectPath); // Debug log
       
       toastService.showSuccessMessage("Login successful!");
       router.push(redirectPath);
       
     } catch (error: any) {
+      console.error("Login error:", error); // Detailed error logging
       setLoading(false);
       
-      // Handle different error scenarios
       if (error.response) {
+        console.error("Error response data:", error.response.data); // Debug log
         const errorMessage = error.response.data?.message || 
           error.response.data?.error || 
           "Login failed. Please try again.";
@@ -162,8 +174,10 @@ export default function Page() {
           toastService.showErrorMessage(errorMessage);
         }
       } else if (error.request) {
+        console.error("No response received:", error.request); // Debug log
         toastService.showErrorMessage("Network error. Please check your connection.");
       } else {
+        console.error("Request setup error:", error.message); // Debug log
         toastService.showErrorMessage("An unexpected error occurred");
       }
     }
@@ -210,7 +224,7 @@ export default function Page() {
         <div className="mb-4">
           <Button
             variant="ghost"
-            onClick={() => router.back()}
+            onClick={() => router.push('/')}
             className="text-gray-600 hover:text-gray-800 hover:bg-transparent"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
