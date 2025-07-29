@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export function TicketPricing() {
   return (
@@ -34,7 +35,7 @@ export function TicketPricing() {
           {/* Card 1: FULL CONFERENCE WITH INAUGURATION */}
           <div className="relative bg-gradient-to-br from-blue-900/90 to-indigo-900/90 rounded-xl shadow-2xl overflow-hidden hover:shadow-3xl transition-all duration-300 hover:scale-105 flex flex-col h-full backdrop-blur-sm border-2 border-white lg:scale-105 lg:hover:scale-110">
 
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 pointer-events-none">
                 <Image
                 src="/eventScheduleBGLeft.png"
                 alt="Conference background"
@@ -87,9 +88,11 @@ export function TicketPricing() {
                 <div className="text-3xl font-bold text-white mb-1">LKR 50,000</div>
                 <div className="text-sm text-white/80">$250 - Foreign Registrations</div>
                 </div>
-                <Button className="bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 hover:bg-transparent hover:text-white hover:border-white" variant="outline">
-                Buy Ticket
-                </Button>
+                <Link href="/register">
+                    <Button className="bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 hover:bg-transparent hover:text-white hover:border-white" variant="outline">
+                        Buy Ticket
+                    </Button>
+                </Link>
             </div>
         </div>
 
@@ -146,9 +149,11 @@ export function TicketPricing() {
                   <div className="text-3xl font-bold text-white mb-1">LKR 20,000</div>
                   <div className="text-sm text-white/80">$100 - Foreign Registrations</div>
                 </div>
-                <Button className="bg-transparent hover:bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 border-white text-white hover:text-[#232c7c]" variant="outline" >
-                  Buy Ticket
-                </Button>
+                <Link href="/register">
+                    <Button className="bg-transparent hover:bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 border-white text-white hover:text-[#232c7c]" variant="outline" >
+                        Buy Ticket
+                    </Button>
+                </Link>
               </div>
               </div>
           </div>
@@ -206,9 +211,11 @@ export function TicketPricing() {
                         <div className="text-3xl font-bold text-white mb-1">LKR 15,000</div>
                         <div className="text-sm text-white/80">$75 - Foreign Registrations</div>
                     </div>
-                    <Button className="bg-transparent hover:bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 border-white text-white hover:text-[#232c7c]" variant="outline" >
-                        Buy Ticket
-                    </Button>
+                    <Link href="/register">
+                        <Button className="bg-transparent hover:bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 border-white text-white hover:text-[#232c7c]" variant="outline" >
+                            Buy Ticket
+                        </Button>
+                    </Link>
                 </div>
                 </div>
           </div>
@@ -262,9 +269,11 @@ export function TicketPricing() {
                     <div className="text-3xl font-bold text-white mb-1">LKR 15,000</div>
                     <div className="text-sm text-white/80">$75 - Foreign Registrations</div>
                     </div>
-                    <Button className="bg-transparent hover:bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 border-white text-white hover:text-[#232c7c] z-2" variant="outline" >
-                    Buy Ticket
-                    </Button>
+                    <Link href="/register">
+                        <Button className="bg-transparent hover:bg-white text-blue-900 hover:bg-gray-100 font-semibold py-3 rounded-full transition-all duration-200 border-white text-white hover:text-[#232c7c] z-2" variant="outline" >
+                            Buy Ticket
+                        </Button>
+                    </Link>
                 </div>
                 </div>
           </div>

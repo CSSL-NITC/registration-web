@@ -19,7 +19,7 @@ const AWARD_CATEGORIES = [
       "CSSL Leader in Business Analysis of the Year",
       "CSSL Leader in Software Quality Assurance of the Year",
       "CSSL Leader in Software Engineering of the Year",
-      "CSSL ICT Innovator of the Year"
+      "CSSL ICT Best Founder of the Year"
     ]
   },
   {
@@ -30,16 +30,16 @@ const AWARD_CATEGORIES = [
       "Undergraduate Category",
       "Postgraduate Category"
     ]
-  },
-  {
-    title: "ICT Startup Eco System Awards",
-    items: [
-      "CSSL Best Founder Award",
-      "CSSL Digital Investor Award",
-      "CSSL Digital Social Innovator Award",
-      "CSSL Emerging ICT Leader of the Year Award"
-    ]
   }
+//   {
+//     title: "ICT Startup Eco System Awards",
+//     items: [
+//       "CSSL Best Founder Award",
+//       "CSSL Digital Investor Award",
+//       "CSSL Digital Social Innovator Award",
+//       "CSSL Emerging ICT Leader of the Year Award"
+//     ]
+//   }
 ];
 
 const AWARD_CONTENT = {
