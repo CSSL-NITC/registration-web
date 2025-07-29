@@ -49,6 +49,60 @@ const sponsors = {
 
 type Sponsor = { name: string; logo: string };
 
+function DiamondSponsorGroup() {
+    return (
+      <div className="flex flex-col items-center w-full gap-2">
+        <h3 className="text-center text-xs sm:text-sm md:text-base font-semibold uppercase tracking-wide text-gray-800 mb-2">
+          Diamond Sponsors
+        </h3>
+        
+        {/* Main row containing both groups */}
+        <div className="flex flex-col md:flex-row justify-evenly items-center gap-8 w-full">
+          {/* First group (DMS + Oracle/Google) */}
+          <div className="flex flex-col items-center gap-2">
+            {/* DMS row */}
+            <div className="flex justify-center mb-2">
+              <div className="relative w-36 h-24 sm:w-40 sm:h-28 md:w-48 md:h-32 transition">
+                <Image src={sponsors.diamond[0].logo} alt={sponsors.diamond[0].name} fill className="object-contain" />
+              </div>
+            </div>
+            {/* Oracle + Google Cloud row */}
+            <div className="flex justify-center gap-6 mb-4">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+                <Image src={sponsors.diamond[1].logo} alt={sponsors.diamond[1].name} fill className="object-contain" />
+              </div>
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+                <Image src={sponsors.diamond[2].logo} alt={sponsors.diamond[2].name} fill className="object-contain" />
+              </div>
+            </div>
+          </div>
+  
+          {/* Second group (Anfer + OZOREF/Safe/ORIN) */}
+          <div className="flex flex-col items-center gap-2">
+            {/* Anfer row */}
+            <div className="flex justify-center mb-2">
+              <div className="relative w-36 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 transition">
+                <Image src={sponsors.diamond[3].logo} alt={sponsors.diamond[3].name} fill className="object-contain" />
+              </div>
+            </div>
+            {/* OZOREF + Safe Project + ORIN row */}
+            <div className="flex justify-center gap-6">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+                <Image src={sponsors.diamond[4].logo} alt={sponsors.diamond[4].name} fill className="object-contain" />
+              </div>
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+                <Image src={sponsors.diamond[5].logo} alt={sponsors.diamond[5].name} fill className="object-contain" />
+              </div>
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+                <Image src={sponsors.diamond[6].logo} alt={sponsors.diamond[6].name} fill className="object-contain" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
 function SponsorGroup({ title, sponsors, size = "medium" }: { title: string; sponsors: Sponsor[]; size?: "large" | "medium" | "small" | "xsmall" | "other" | "electronic" | "industry" }) {
   const getSizeClasses = (size: string) => {
     switch (size) {
@@ -57,14 +111,14 @@ function SponsorGroup({ title, sponsors, size = "medium" }: { title: string; spo
       case "medium":
         return "relative w-24 h-20 sm:w-28 sm:h-24 md:w-36 md:h-32 transition"
       case "small":
-        return "relative w-20 h-10 sm:w-24 sm:h-12 md:w-24 md:h-20 transition"
+        return "relative w-20 h-20 sm:w-24 sm:h-16 md:w-32 md:h-24 transition"
       case "xsmall":
         return "relative w-36 h-10 sm:w-42 sm:h-12 md:w-48 md:h-20 transition"
       case "other":
         return "relative w-16 h-10 sm:w-20 sm:h-12 md:w-28 md:h-20 transition"
       case "electronic":
         return "relative w-36 h-10 sm:w-32 sm:h-12 md:w-48 md:h-20 transition"
-        case "industry":
+      case "industry":
         return "relative w-16 h-10 sm:w-14 sm:h-12 md:w-24 md:h-20 transition"
       default:
         return "relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 transition"
@@ -109,30 +163,30 @@ export function SponsorsSection() {
           </div>
         </div>
         <hr className="border-gray-200" />
-        
         {/* Row 2: Diamond Sponsors */}
         <div className="flex flex-col items-center justify-center w-full">
-          <SponsorGroup title="Diamond Sponsors" sponsors={sponsors.diamond} size="medium" />
+          <DiamondSponsorGroup />
         </div>
         <hr className="border-gray-200" />
-        
         {/* Row 3: Gold Sponsors + Partners */}
-        <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full">
-          <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
+        <div className="flex flex-col items-center justify-center w-full">
             <SponsorGroup title="Gold Sponsors" sponsors={sponsors.gold} size="small" />
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center">
+        </div>
+        <hr className="border-gray-200" />
+        <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full lg:items-start">
+          <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
             <SponsorGroup title="Partners" sponsors={sponsors.partners} size="xsmall" />
           </div>
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <SponsorGroup title="Industry Partners" sponsors={sponsors.industry} size="industry" />
+          </div>
         </div>
         <hr className="border-gray-200" />
-        
         {/* Row 4: Industry Partners */}
-        <div className="flex flex-col items-center justify-center w-full">
+        {/* <div className="flex flex-col items-center justify-center w-full">
           <SponsorGroup title="Industry Partners" sponsors={sponsors.industry} size="industry" />
-        </div>
-        <hr className="border-gray-200" />
-        
+        </div> */}
+        {/* <hr className="border-gray-200" /> */}
         {/* Row 5: Electronic Media Partner + Event Partner + Design Partner */}
         <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full">
           <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
