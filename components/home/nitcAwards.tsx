@@ -12,6 +12,15 @@ const AWARD_CATEGORIES = [
     ]
   },
   {
+    title: "ICT Student Awards",
+    items: [
+      "School Category (Public)",
+      "School Category (International)",
+      "Undergraduate Category",
+      "Postgraduate Category"
+    ]
+  },
+  {
     title: "Professional Awards",
     items: [
       "CSSL Chief Information Security Officer of the Year",
@@ -20,15 +29,6 @@ const AWARD_CATEGORIES = [
       "CSSL Leader in Software Quality Assurance of the Year",
       "CSSL Leader in Software Engineering of the Year",
       "CSSL ICT Best Founder of the Year"
-    ]
-  },
-  {
-    title: "ICT Student Awards",
-    items: [
-      "School Category (Public)",
-      "School Category (International)",
-      "Undergraduate Category",
-      "Postgraduate Category"
     ]
   }
 //   {
