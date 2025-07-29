@@ -34,7 +34,8 @@ export function RegistrationsTable({
 
   const filteredRegistrations = registrations.filter((registration) => {
     const matchesSearch =
-      registration.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      registration.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      registration.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       registration.email.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === "all" || registration.paymentStatus === statusFilter
     return matchesSearch && matchesStatus
@@ -149,7 +150,7 @@ export function RegistrationsTable({
                   <TableRow key={registration.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                     <TableCell>
                       <div>
-                        <div className="font-medium text-gray-900 dark:text-white">{registration.name}</div>
+                        <div className="font-medium text-gray-900 dark:text-white">{registration.firstName + " " + registration.lastName}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">{registration.email}</div>
                       </div>
                     </TableCell>

@@ -6,6 +6,18 @@ export async function onLogin(loginReq: any) {
   return response;
 }
 
+export async function onForgotPassword(loginReq: any) {
+  // need to implement
+  const response = await dataService.post(loginEndpoints.login, loginReq);
+  return response;
+}
+
+export async function onResetPassword(loginReq: any) {
+  //need to implement
+  const response = await dataService.post(loginEndpoints.login, loginReq);
+  return response;
+}
+
 export async function expireUserCache() {
   await dataService.post(loginEndpoints.expireUseCache);
 }

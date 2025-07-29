@@ -12,28 +12,28 @@ const EVENT_HIGHLIGHTS = {
       title: "Location",
       mainText: "Shangri-La Hotel",
       subText: "Colombo 02",
-      imageSrc: "/shangri-la_hotel.png"
+      imageSrc: "https://res.cloudinary.com/djxtjt1uf/image/upload/v1753805774/shangri-la_hotel_tk3bls.png"
     },
     {
       id: 'date',
       title: "Date",
       mainText: "14th - 16th",
       subText: "October 2025",
-      imageSrc: "/event_calender.png"
+      imageSrc: "https://res.cloudinary.com/djxtjt1uf/image/upload/v1753805775/event_calender_clulqh.png"
     },
     {
       id: 'speakers',
       title: "Speakers",
-      mainText: "20+",
+      mainText: "30+",
       subText: "Professionals",
-      imageSrc: "/speakers.png"
+      imageSrc: "https://res.cloudinary.com/djxtjt1uf/image/upload/v1753805771/speakers_yjz0pe.png"
     },
     {
       id: 'seats',
       title: "Seats",
-      mainText: "450+",
+      mainText: "750+",
       subText: "People",
-      imageSrc: "/people.png"
+      imageSrc: "https://res.cloudinary.com/djxtjt1uf/image/upload/v1753805780/people_g4mpvo.png"
     }
   ]
 };

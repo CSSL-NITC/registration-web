@@ -37,6 +37,7 @@ export function CompanyRegistration() {
     const newErrors: Record<string, string> = {}
     
     if (!formData.companyName.trim()) newErrors.companyName = "Company name is required"
+    if (!formData.companyAddress.trim()) newErrors.companyAddress = "Company address is required"
     if (!formData.contactPersonFirstName.trim()) newErrors.contactPersonFirstName = "Contact person first name is required"
     if (!formData.contactPersonLastName.trim()) newErrors.contactPersonLastName = "Contact person last name is required"
     if (!formData.contactPersonDesignation.trim()) newErrors.contactPersonDesignation = "Designation is required"
@@ -249,7 +250,7 @@ export function CompanyRegistration() {
                       errors.companyAddress ? "border-red-500" : "border-slate-300"
                     }`} 
                     placeholder="Enter your company address" 
-                    rows={1} 
+                    rows={3} 
                   />
                   {errors.companyAddress && <p className="text-red-500 text-sm mt-1">{errors.companyAddress}</p>}
                 </div>
