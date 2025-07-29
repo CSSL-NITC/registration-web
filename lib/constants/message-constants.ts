@@ -1,6 +1,6 @@
 export const DEFAULT_CONTACT_ADMIN = "Please contact system administrator";
 export const INVALID_CREDENTIALS = "Invalid credentials";
-export const INVALID_USERNAME = "Invalid username";
+export const INVALID_EMAIL = "Invalid email";
 export const DEFAULT_SAVE_UPDATE = "Successfully saved / updated";
 export const DEFAULT_DELETE = "Successfully deleted";
 export const CUSTOM_FILE_UPLOAD = "Successfully uploaded the custom document";

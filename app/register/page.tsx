@@ -28,7 +28,7 @@ export default function RegisterPage() {
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
             <Image 
-              src="/NITC_LOGO.png" 
+              src="https://res.cloudinary.com/djxtjt1uf/image/upload/v1753804463/NITC-Logo-7c1f04fc_qobxl1.png" 
               alt="NITC 2025 Logo" 
               width={120} 
               height={120} 
