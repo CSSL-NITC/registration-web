@@ -59,41 +59,41 @@ function DiamondSponsorGroup() {
         {/* Main row containing both groups */}
         <div className="flex flex-col md:flex-row justify-evenly items-center gap-8 w-full">
           {/* First group (DMS + Oracle/Google) */}
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-1">
             {/* DMS row */}
             <div className="flex justify-center mb-2">
-              <div className="relative w-36 h-24 sm:w-40 sm:h-28 md:w-48 md:h-32 transition">
+              <div className="relative w-36 h-24 sm:w-40 sm:h-28 md:w-44 md:h-32 transition">
                 <Image src={sponsors.diamond[0].logo} alt={sponsors.diamond[0].name} fill className="object-contain" />
               </div>
             </div>
             {/* Oracle + Google Cloud row */}
             <div className="flex justify-center gap-6 mb-4">
-              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-38 md:h-30 transition">
                 <Image src={sponsors.diamond[1].logo} alt={sponsors.diamond[1].name} fill className="object-contain" />
               </div>
-              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-38 md:h-30 transition">
                 <Image src={sponsors.diamond[2].logo} alt={sponsors.diamond[2].name} fill className="object-contain" />
               </div>
             </div>
           </div>
   
           {/* Second group (Anfer + OZOREF/Safe/ORIN) */}
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-1">
             {/* Anfer row */}
             <div className="flex justify-center mb-2">
-              <div className="relative w-36 h-20 sm:w-40 sm:h-24 md:w-48 md:h-28 transition">
+              <div className="relative w-36 h-20 sm:w-40 sm:h-24 md:w-40 md:h-32 transition">
                 <Image src={sponsors.diamond[3].logo} alt={sponsors.diamond[3].name} fill className="object-contain" />
               </div>
             </div>
             {/* OZOREF + Safe Project + ORIN row */}
-            <div className="flex justify-center gap-6">
-              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+            <div className="flex justify-center gap-1">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-36 md:h-30 transition">
                 <Image src={sponsors.diamond[4].logo} alt={sponsors.diamond[4].name} fill className="object-contain" />
               </div>
-              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-36 md:h-30 transition">
                 <Image src={sponsors.diamond[5].logo} alt={sponsors.diamond[5].name} fill className="object-contain" />
               </div>
-              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-40 md:h-32 transition">
+              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-36 md:h-30 transition">
                 <Image src={sponsors.diamond[6].logo} alt={sponsors.diamond[6].name} fill className="object-contain" />
               </div>
             </div>
@@ -154,13 +154,14 @@ export function SponsorsSection() {
     <section className="w-full py-10 px-2 sm:px-4 md:px-8 bg-white">
       <div className="max-w-7xl mx-auto flex flex-col gap-10">
         {/* Row 1: National Partner + Strategic Partner */}
-        <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full">
-          <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
-            <SponsorGroup title="National Partner" sponsors={sponsors.national} size="large" />
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <SponsorGroup title="Strategic Partner" sponsors={sponsors.strategic} size="large" />
-          </div>
+        <div className="flex flex-col items-center w-full">
+          <SponsorGroup title="National Partner" sponsors={sponsors.national} size="large" />
+        </div>
+        <hr className="border-gray-200" />
+        
+        {/* Row 2: Strategic Partner */}
+        <div className="flex flex-col items-center w-full">
+          <SponsorGroup title="Strategic Partner" sponsors={sponsors.strategic} size="large" />
         </div>
         <hr className="border-gray-200" />
         {/* Row 2: Diamond Sponsors */}
