@@ -10,7 +10,7 @@ const DIGITAL_SUMMIT_CONTENT = {
   buttonText: "Learn More",
   buttonLink: "#summit",
   images: {
-    conference: "/digital_investment_summit_bg.png",
+    conference: "https://res.cloudinary.com/djxtjt1uf/image/upload/v1753901565/CT8A8326_50_hpv9co.jpg",
     logo: "/CSSL_logo.png"
   }
 };
@@ -61,9 +61,9 @@ export function DigitalInvestmentSummit() {
             </div>
             
             {/* Connecting line - horizontal for mobile, vertical for desktop */}
-            <div className="absolute inset-0 flex items-center justify-center -z-10">
+            {/* <div className="absolute inset-0 flex items-center justify-center -z-10">
               <div className="hidden lg:block w-0.5 h-full bg-gray-200"></div>
-            </div>
+            </div> */}
           </div>
         </div>
         
