@@ -31,3 +31,5 @@ export const APP_PROPERTIES = {
   storageBaseUrl: "",
   maximumFileUploadSize: "",
 };
+
+export const API_PREFIX = "/api/v1";

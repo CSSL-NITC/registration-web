@@ -1,14 +1,39 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { onRegistrationInit } from "@/lib/api/registration-api"
+import { PredefinedRole } from "@/lib/constants/@types"
+import { isAlreadyUsed } from "@/lib/utils/email-vaildation-utils"
 import { useState } from "react"
-import { PersonalInformationForm } from "./forms/personal-information-form"
-import { PackageSelectionForm } from "./forms/package-selection-form"
+import { toast } from "sonner"
+import IframeViewer from "../iframe-veiwer"
 import { MembershipDiscountForm } from "./forms/membership-discount-form"
+import { PackageSelectionForm } from "./forms/package-selection-form"
+import { PersonalInformationForm } from "./forms/personal-information-form"
 import { EmailVerificationStep } from "./steps/email-verification-step"
 import { PaymentSummaryStep } from "./steps/payment-summary-step"
-import { SuccessStep } from "./steps/success-step"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+
+
+export interface CompanyCreateRQ {
+  name: string;
+  address: string;
+}
+
+export interface RegistrationRequest {
+  userType: string;
+  password: string;
+  mobile: string;
+  firstName: string;
+  lastName: string;
+  designation: string;
+  email: string;
+  nic?: string;
+  workplace?: string;
+  packages?: number[];
+  company?: CompanyCreateRQ;
+  address?: string;
+  membershipCode?: string;
+}
 
 export interface IndividualFormData {
   title: string;
@@ -33,7 +58,20 @@ export interface IndividualFormData {
   memberId: string;
 }
 
+interface RegistrationInitResponseData {
+  reqid: string;
+  expireAt: string;
+  paymentPageUrl: string;
+}
+
+interface RegistrationInitResponse {
+  messageId: string;
+  responseData: RegistrationInitResponseData;
+}
+
+
 export function IndividualRegistration() {
+  const [registrationInitResponse, setRegistrationInitResponse] = useState<RegistrationInitResponse | undefined>(undefined);
   const [formData, setFormData] = useState<IndividualFormData>({
     title: "Mr.",
     firstName: "",
@@ -59,7 +97,8 @@ export function IndividualRegistration() {
 
   const [step, setStep] = useState(1) // 1: Registration, 2: Email Verification, 3: Payment, 4: Success
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -83,9 +122,9 @@ export function IndividualRegistration() {
     }
 
     // Other Member Validation
-    if ((formData.isBCSMember || formData.isISACAMember || formData.isIESLMember || 
-         formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember) && 
-        !formData.memberId.trim()) {
+    if ((formData.isBCSMember || formData.isISACAMember || formData.isIESLMember ||
+      formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember) &&
+      !formData.memberId.trim()) {
       newErrors.memberId = "Member ID is required"
     }
 
@@ -93,35 +132,54 @@ export function IndividualRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    console.log("formData: ", formData.package)
+
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error("Please fill in all required fields")
       return
     }
 
-    setStep(2)
+    isAlreadyUsed(formData.email, () => { setStep(2) });
+
   }
 
   const handleBackToForm = () => {
     setStep(1)
   }
 
-  const handleEmailVerified = () => {
-    setStep(3)
-  }
-
   const handlePaymentComplete = () => {
-    setStep(4)
+    const request: RegistrationRequest = {
+      userType: PredefinedRole.INDIVIDUAL_USER,
+      password: formData.password,
+      mobile: formData.mobile,
+      nic: formData.nic,
+      firstName: `${formData.title} ${formData.firstName}`,
+      lastName: formData.lastName,
+      email: formData.email,
+      packages: [1], // TODO: 
+      designation: formData.designation,
+      workplace: formData.workplace,
+      membershipCode: formData.csslMembershipId,
+    };
+
+
+    onRegistrationInit(request)
+      .then(res => {
+        setRegistrationInitResponse(res.data);
+        setStep(4)
+      }).catch(() => { });
+    // dispatch(setRegistrationRequest(request))
   }
 
   if (step === 2) {
     return (
-      <EmailVerificationStep 
+      <EmailVerificationStep
         email={formData.email}
-        onVerified={handleEmailVerified}
-        onBack={handleBackToForm}
+        onNext={() => setStep(3)}
+        onBack={() => setStep(1)}
         loading={loading}
       />
     )
@@ -129,7 +187,7 @@ export function IndividualRegistration() {
 
   if (step === 3) {
     return (
-      <PaymentSummaryStep 
+      <PaymentSummaryStep
         formData={formData}
         onPaymentComplete={handlePaymentComplete}
         onBack={handleBackToForm}
@@ -138,9 +196,14 @@ export function IndividualRegistration() {
     )
   }
 
-  if (step === 4) {
-    return <SuccessStep />
+  if (step === 4 && !!registrationInitResponse) {
+    const paymentPageUrl = registrationInitResponse.responseData.paymentPageUrl;
+    return <IframeViewer url={paymentPageUrl} />
   }
+
+  /* if (step === 4) {
+    return <SuccessStep />
+  } */
 
   return (
     <div className="max-w-4xl mx-auto font-['Roboto']">
@@ -154,21 +217,21 @@ export function IndividualRegistration() {
           </div>
 
           <form onSubmit={handleFormSubmit} className="space-y-12">
-            <PersonalInformationForm 
+            <PersonalInformationForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}
               setErrors={setErrors}
             />
 
-            <PackageSelectionForm 
+            <PackageSelectionForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}
               setErrors={setErrors}
             />
 
-            <MembershipDiscountForm 
+            <MembershipDiscountForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}

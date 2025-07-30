@@ -56,12 +56,13 @@ const packages = [
   },
 ]
 
+
 export function PackageSelectionForm({ formData, setFormData, errors, setErrors }: PackageSelectionFormProps) {
   const [selectedPackages, setSelectedPackages] = useState<string[]>(formData.package ? [formData.package] : [])
 
   const handlePackageSelect = (packageId: string) => {
     let newSelectedPackages = [...selectedPackages]
-    
+
     // Handle full conference package selection
     if (packageId === "all3") {
       if (newSelectedPackages.includes("all3")) {
@@ -85,11 +86,11 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
         }
         // Select individual package
         newSelectedPackages.push(packageId)
-        
+
         // Check if all individual packages are selected
         const individualPackages = ["day1", "day1-2", "day2-3"]
         const hasAllIndividual = individualPackages.every(id => newSelectedPackages.includes(id))
-        
+
         if (hasAllIndividual) {
           newSelectedPackages = ["all3"]
           toast.success("We've upgraded you to the Full Conference package for better value!")
@@ -99,7 +100,7 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
 
     setSelectedPackages(newSelectedPackages)
     setFormData({ ...formData, package: newSelectedPackages[0] || "" })
-    
+
     if (errors.package) {
       const newErrors = { ...errors }
       delete newErrors.package
@@ -123,7 +124,7 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
           const isFullConference = pkg.id === "all3"
 
           return (
-            <div 
+            <div
               key={pkg.id}
               className={`relative transition-all duration-200 rounded-xl overflow-hidden border
                 ${isSelected ? "ring-2 ring-blue-500 ring-offset-2" : "border-gray-200 hover:border-[#232c7c]"}

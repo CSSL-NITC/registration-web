@@ -1,16 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Mail, Shield, CheckCircle, Building2, User, Phone, MapPin, Eye, EyeOff } from "lucide-react"
-import { sendVerificationEmail } from "@/lib/mock-api/registrations"
+import { onCompanyRegistration } from "@/lib/api/registration-api"
+import { PredefinedRole } from "@/lib/constants/@types"
+import { isAlreadyUsed } from "@/lib/utils/email-vaildation-utils"
+import { Building2, CheckCircle, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { useState } from "react"
 import { toast } from "sonner"
+import { EmailVerificationStep } from "./steps/email-verification-step"
+import { RegistrationRequest } from "./individual-registration"
 
 export function CompanyRegistration() {
   const [formData, setFormData] = useState({
@@ -28,14 +32,11 @@ export function CompanyRegistration() {
   const [step, setStep] = useState(1) // 1: Registration, 2: Email Verification, 3: Success
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
-  const [verificationCode, setVerificationCode] = useState("")
-  const [sentCode, setSentCode] = useState("")
-  const [codeSent, setCodeSent] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
-    
+
     if (!formData.companyName.trim()) newErrors.companyName = "Company name is required"
     if (!formData.companyAddress.trim()) newErrors.companyAddress = "Company address is required"
     if (!formData.contactPersonFirstName.trim()) newErrors.contactPersonFirstName = "Contact person first name is required"
@@ -44,120 +45,52 @@ export function CompanyRegistration() {
     if (!formData.contactPersonMobile.trim()) newErrors.contactPersonMobile = "Mobile number is required"
     if (!formData.contactPersonEmail.trim()) newErrors.contactPersonEmail = "Email is required"
     if (!formData.contactPersonPassword.trim()) newErrors.contactPersonPassword = "Password is required"
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error("Please fill in all required fields")
       return
     }
 
-    setStep(2)
+    isAlreadyUsed(formData.contactPersonEmail, () => { setStep(2) });
+
   }
 
-  const handleSendCode = async () => {
-    setLoading(true)
-    try {
-      const result = await sendVerificationEmail(formData.contactPersonEmail)
-      setSentCode(result.code)
-      setCodeSent(true)
-      toast.success("Verification code sent to your email!")
-    } catch (error) {
-      toast.error("Failed to send verification code")
-    } finally {
-      setLoading(false)
-    }
+  const handleRegistration = () => {
+    const request: RegistrationRequest = {
+      userType: PredefinedRole.COMPANY,
+      password: formData.contactPersonPassword,
+      mobile: formData.contactPersonMobile,
+      firstName: `${formData.contactPersonTitle} ${formData.contactPersonFirstName}`,
+      lastName: formData.contactPersonLastName,
+      email: formData.contactPersonEmail,
+      designation: formData.contactPersonDesignation,
+      company: {
+        name: formData.companyName,
+        address: formData.companyAddress
+      }
+    };
+    onCompanyRegistration(request)
+      .then(res => {
+        setStep(3);
+      }).catch(() => { })
   }
 
-  const handleEmailVerification = async () => {
-    if (verificationCode === sentCode) {
-      toast.success("Email verified successfully!")
-      setStep(3)
-    } else {
-      toast.error("Invalid verification code")
-    }
-  }
 
   if (step === 2) {
     return (
-      <div className="max-w-md mx-auto font-['Roboto']">
-        <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-md">
-          <CardHeader className="text-center pb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-white" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-slate-900">Verify Your Email</CardTitle>
-            <CardDescription className="text-slate-600">
-              We've sent a verification code to {formData.contactPersonEmail}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Alert className="border-slate-200 bg-slate-50">
-              <Shield className="h-4 w-4 text-slate-600" />
-              <AlertDescription className="text-slate-800">
-                Please check your email and enter the 6-digit verification code below.
-              </AlertDescription>
-            </Alert>
-
-            {!codeSent ? (
-              <Button
-                onClick={handleSendCode}
-                className="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black shadow-lg hover:shadow-xl transition-all duration-200"
-                disabled={loading}
-              >
-                {loading ? "Sending..." : "Send Verification Code"}
-              </Button>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="verification-code" className="text-sm font-medium text-slate-700 mb-2 block">
-                    Verification Code *
-                  </Label>
-                  <Input
-                    id="verification-code"
-                    type="text"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                    className="w-full px-4 py-3 bg-white text-slate-900 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors"
-                    placeholder="Enter 6-digit code"
-                    maxLength={6}
-                  />
-                </div>
-                
-                <Button
-                  onClick={handleEmailVerification}
-                  className="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black shadow-lg hover:shadow-xl transition-all duration-200"
-                  disabled={verificationCode.length !== 6}
-                >
-                  Verify Code
-                </Button>
-                
-                <Button
-                  onClick={handleSendCode}
-                  variant="outline"
-                  className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
-                  disabled={loading}
-                >
-                  {loading ? "Sending..." : "Resend Code"}
-                </Button>
-              </div>
-            )}
-
-            <Button
-              variant="outline"
-              onClick={() => setStep(1)}
-              className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
-            >
-              Back to Registration
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <EmailVerificationStep
+        email={formData.contactPersonEmail}
+        onNext={handleRegistration}
+        onBack={() => setStep(1)}
+        loading={loading}
+      />
     )
   }
 
@@ -228,29 +161,27 @@ export function CompanyRegistration() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label htmlFor="companyName" className="text-sm font-medium text-slate-700">Company Name *</Label>
-                  <Input 
-                    id="companyName" 
-                    value={formData.companyName} 
-                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })} 
-                    className={`mt-1 px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors ${
-                      errors.companyName ? "border-red-500" : "border-slate-300"
-                    }`} 
-                    placeholder="Enter your company name" 
+                  <Input
+                    id="companyName"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    className={`mt-1 px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors ${errors.companyName ? "border-red-500" : "border-slate-300"
+                      }`}
+                    placeholder="Enter your company name"
                   />
                   {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName}</p>}
                 </div>
 
                 <div>
                   <Label htmlFor="companyAddress" className="text-sm font-medium text-slate-700">Company Address *</Label>
-                  <Textarea 
-                    id="companyAddress" 
-                    value={formData.companyAddress} 
-                    onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })} 
-                    className={`mt-1 px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors resize-none ${
-                      errors.companyAddress ? "border-red-500" : "border-slate-300"
-                    }`} 
-                    placeholder="Enter your company address" 
-                    rows={3} 
+                  <Textarea
+                    id="companyAddress"
+                    value={formData.companyAddress}
+                    onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
+                    className={`mt-1 px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors resize-none ${errors.companyAddress ? "border-red-500" : "border-slate-300"
+                      }`}
+                    placeholder="Enter your company address"
+                    rows={3}
                   />
                   {errors.companyAddress && <p className="text-red-500 text-sm mt-1">{errors.companyAddress}</p>}
                 </div>
@@ -275,9 +206,8 @@ export function CompanyRegistration() {
                       id="contactPersonTitle"
                       value={formData.contactPersonTitle}
                       onChange={e => setFormData({ ...formData, contactPersonTitle: e.target.value })}
-                      className={`w-full px-4 py-[10px] text-sm bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors appearance-none ${
-                        errors.contactPersonTitle ? "border-red-500" : "border-slate-300"
-                      }`}
+                      className={`w-full px-4 py-[10px] text-sm bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors appearance-none ${errors.contactPersonTitle ? "border-red-500" : "border-slate-300"
+                        }`}
                     >
                       <option value="Mr.">Mr.</option>
                       <option value="Ms.">Ms.</option>
