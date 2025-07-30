@@ -76,7 +76,7 @@ export function Navbar() {
           <Link href="/login">
             <Button 
               variant="ghost" 
-              className="relative text-white hover:border hover:border-white hover:bg-transparent hover:rounded-full"
+              className="relative text-white hover:border hover:border-white hover:bg-transparent hover:rounded-full hover:text-white"
             >
               <span className="relative z-10">Login</span>
             </Button>

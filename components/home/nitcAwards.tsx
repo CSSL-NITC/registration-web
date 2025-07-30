@@ -43,8 +43,8 @@ const AWARD_CATEGORIES = [
 ];
 
 const AWARD_CONTENT = {
-  title: "NITC Awards 2024",
-  subtitle: "At the NITC awards 2025, Come Celebrate the outstanding achievements of the industries shining stars",
+  title: "CSSL National ICT Awards 2024",
+  subtitle: "At the NITC awards 2024, Come Celebrate the outstanding achievements of the industries shining stars",
   description: "CSSL Awards recognises significant national contributions by ICT Professionals and CSSL Elite awards will be held at the inauguration ceremony of the NITC Conference.",
   buttons: [
     { text: "Apply Now", variant: "default" },
