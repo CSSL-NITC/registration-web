@@ -81,7 +81,7 @@ function DiamondSponsorGroup() {
           <div className="flex flex-col items-center gap-1">
             {/* Anfer row */}
             <div className="flex justify-center mb-2">
-              <div className="relative w-36 h-20 sm:w-40 sm:h-24 md:w-40 md:h-32 transition">
+              <div className="relative w-[130px] h-20 sm:w-40 sm:h-24 md:w-[158px] md:h-32 transition">
                 <Image src={sponsors.diamond[3].logo} alt={sponsors.diamond[3].name} fill className="object-contain" />
               </div>
             </div>
@@ -93,7 +93,7 @@ function DiamondSponsorGroup() {
               <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-36 md:h-30 transition">
                 <Image src={sponsors.diamond[5].logo} alt={sponsors.diamond[5].name} fill className="object-contain" />
               </div>
-              <div className="relative w-28 h-24 sm:w-40 sm:h-28 md:w-36 md:h-30 transition">
+              <div className="relative w-24 h-24 sm:w-40 sm:h-28 md:w-[130px] md:h-30 transition">
                 <Image src={sponsors.diamond[6].logo} alt={sponsors.diamond[6].name} fill className="object-contain" />
               </div>
             </div>
@@ -103,104 +103,105 @@ function DiamondSponsorGroup() {
     )
   }
 
-function SponsorGroup({ title, sponsors, size = "medium" }: { title: string; sponsors: Sponsor[]; size?: "large" | "medium" | "small" | "xsmall" | "other" | "electronic" | "industry" }) {
-  const getSizeClasses = (size: string) => {
-    switch (size) {
-      case "large":
-        return "relative w-36 h-32 sm:w-40 sm:h-40 md:w-52 md:h-52 transition"
-      case "medium":
-        return "relative w-24 h-20 sm:w-28 sm:h-24 md:w-36 md:h-32 transition"
-      case "small":
-        return "relative w-20 h-20 sm:w-24 sm:h-16 md:w-32 md:h-24 transition"
-      case "xsmall":
-        return "relative w-36 h-10 sm:w-42 sm:h-12 md:w-48 md:h-20 transition"
-      case "other":
-        return "relative w-16 h-10 sm:w-20 sm:h-12 md:w-28 md:h-20 transition"
-      case "electronic":
-        return "relative w-36 h-10 sm:w-32 sm:h-12 md:w-48 md:h-20 transition"
-      case "industry":
-        return "relative w-16 h-10 sm:w-14 sm:h-12 md:w-24 md:h-20 transition"
-      default:
-        return "relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 transition"
+  function SponsorGroup({ title, sponsors, size = "medium" }: { title: string; sponsors: Sponsor[]; size?: "large" | "medium" | "small" | "xsmall" | "other" | "electronic" | "industry" }) {
+    const getSizeClasses = (size: string) => {
+      switch (size) {
+        case "large":
+          return "relative w-36 h-32 sm:w-40 sm:h-40 md:w-52 md:h-52 transition"
+        case "medium":
+          return "relative w-24 h-20 sm:w-28 sm:h-24 md:w-36 md:h-32 transition"
+        case "small":
+          return "relative w-20 h-20 sm:w-24 sm:h-16 md:w-32 md:h-24 transition"
+        case "xsmall":
+          return "relative w-36 h-10 sm:w-42 sm:h-12 md:w-48 md:h-20 transition"
+        case "other":
+          return "relative w-16 h-10 sm:w-20 sm:h-12 md:w-28 md:h-20 transition"
+        case "electronic":
+          return "relative w-36 h-10 sm:w-32 sm:h-12 md:w-48 md:h-20 transition"
+        case "industry":
+          return "relative w-16 h-10 sm:w-14 sm:h-12 md:w-24 md:h-20 transition"
+        default:
+          return "relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 transition"
+      }
     }
-  }
-
-  return (
-    <div className="flex flex-col items-center w-full">
-      <h3 className="text-center text-xs sm:text-sm md:text-base font-semibold uppercase tracking-wide text-gray-800 mb-2">
-        {title}
-      </h3>
-      <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8">
-        {sponsors.map((sponsor: Sponsor) => (
-          <div
-            key={sponsor.name}
-            className={getSizeClasses(size)}
-          >
-            <Image
-              src={sponsor.logo}
-              alt={sponsor.name}
-              fill
-              className="object-contain"
-            />
-          </div>
-        ))}
+  
+    return (
+      <div className="flex flex-col items-center w-full">
+        <h3 className="text-center text-xs sm:text-sm md:text-base font-semibold uppercase tracking-wide text-gray-800 mb-2">
+          {title}
+        </h3>
+        <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 md:gap-8">
+          {sponsors.map((sponsor: Sponsor) => (
+            <div
+              key={sponsor.name}
+              className={`${getSizeClasses(size)} ${sponsor.name === "DELL" ? "!w-12 !h-20 sm:!w-20 sm:!h-16 md:!w-24 md:!h-24" : ""}`} // DELL size override
+            >
+              <Image
+                src={sponsor.logo}
+                alt={sponsor.name}
+                fill
+                className="object-contain"
+              />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  )
-}
-
-export function SponsorsSection() {
-  return (
-    <section className="w-full py-10 px-2 sm:px-4 md:px-8 bg-white">
-      <div className="max-w-7xl mx-auto flex flex-col gap-10">
-        {/* Row 1: National Partner + Strategic Partner */}
-        <div className="flex flex-col items-center w-full">
-          <SponsorGroup title="National Partner" sponsors={sponsors.national} size="large" />
-        </div>
-        <hr className="border-gray-200" />
-        
-        {/* Row 2: Strategic Partner */}
-        <div className="flex flex-col items-center w-full">
-          <SponsorGroup title="Strategic Partner" sponsors={sponsors.strategic} size="large" />
-        </div>
-        <hr className="border-gray-200" />
-        {/* Row 2: Diamond Sponsors */}
-        <div className="flex flex-col items-center justify-center w-full">
-          <DiamondSponsorGroup />
-        </div>
-        <hr className="border-gray-200" />
-        {/* Row 3: Gold Sponsors + Partners */}
-        <div className="flex flex-col items-center justify-center w-full">
+    )
+  }
+  
+  export function SponsorsSection() {
+    return (
+      <section className="w-full py-10 px-2 sm:px-4 md:px-8 bg-white">
+        <div className="max-w-7xl mx-auto flex flex-col gap-10">
+          {/* Row 1: National Partner */}
+          <div className="flex flex-col items-center w-full">
+            <SponsorGroup title="National Partner" sponsors={sponsors.national} size="large" />
+          </div>
+          <hr className="border-gray-200" />
+          
+          {/* Row 2: Strategic Partner */}
+          <div className="flex flex-col items-center w-full">
+            <SponsorGroup title="Strategic Partner" sponsors={sponsors.strategic} size="large" />
+          </div>
+          <hr className="border-gray-200" />
+          
+          {/* Row 3: Diamond Sponsors */}
+          <div className="flex flex-col items-center justify-center w-full">
+            <DiamondSponsorGroup />
+          </div>
+          <hr className="border-gray-200" />
+          
+          {/* Row 4: Gold Sponsors (DELL now smaller) */}
+          <div className="flex flex-col items-center justify-center w-full">
             <SponsorGroup title="Gold Sponsors" sponsors={sponsors.gold} size="small" />
-        </div>
-        <hr className="border-gray-200" />
-        <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full lg:items-start">
-          <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
+          </div>
+          <hr className="border-gray-200" />
+          
+          {/* Row 5: Partners (now separate) */}
+          <div className="flex flex-col items-center justify-center w-full">
             <SponsorGroup title="Partners" sponsors={sponsors.partners} size="xsmall" />
           </div>
-          <div className="flex-1 flex flex-col items-center justify-center">
+          <hr className="border-gray-200" />
+          
+          {/* Row 6: Industry Partners (now in a separate row) */}
+          <div className="flex flex-col items-center justify-center w-full">
             <SponsorGroup title="Industry Partners" sponsors={sponsors.industry} size="industry" />
           </div>
-        </div>
-        <hr className="border-gray-200" />
-        {/* Row 4: Industry Partners */}
-        {/* <div className="flex flex-col items-center justify-center w-full">
-          <SponsorGroup title="Industry Partners" sponsors={sponsors.industry} size="industry" />
-        </div> */}
-        {/* <hr className="border-gray-200" /> */}
-        {/* Row 5: Electronic Media Partner + Event Partner + Design Partner */}
-        <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full">
-          <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
-            <SponsorGroup title="Electronic Media Partner" sponsors={sponsors.electronic} size="electronic" />
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
-            <SponsorGroup title="Event Partner" sponsors={sponsors.event} size="other" />
-          </div>
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <SponsorGroup title="Design Partner" sponsors={sponsors.design} size="other" />
+          <hr className="border-gray-200" />
+          
+          {/* Row 7: Electronic, Event & Design Partners */}
+          <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between items-stretch w-full">
+            <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
+              <SponsorGroup title="Electronic Media Partner" sponsors={sponsors.electronic} size="electronic" />
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center mb-6 md:mb-0">
+              <SponsorGroup title="Event Partner" sponsors={sponsors.event} size="other" />
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <SponsorGroup title="Design Partner" sponsors={sponsors.design} size="other" />
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  )
-}
+      </section>
+    )
+  }

@@ -119,7 +119,7 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
           </div>
           <div className="text-2xl font-bold text-orange-600 mb-2">10% OFF</div>
           <p className="text-sm text-slate-700 mb-4">
-            Until 30th August 2025
+            Until 10th September 2025
           </p>
           <div className="flex items-center space-x-2">
             <Checkbox
