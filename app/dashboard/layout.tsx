@@ -23,16 +23,48 @@ export default function DashboardLayout({
   useEffect(() => {
     if (user) {
       let userID: number = user.userID;
+      console.log(user)
       dispatch(getUser(userID))
     }
   }, [user?.userID]);
 
   const handleLogout = () => {
     jwtService.logout();
-
     routerService.navigateToPage({
       page: PUBLIC_PAGES.LOGIN,
     });
+  };
+
+  // Function to get title based on user role
+  const getTitle = () => {
+    if (!user?.roles) return "Dashboard";
+    
+    if (user.roles.includes("SUPER_ADMIN")) {
+      return "Admin Dashboard";
+    } else if (user.roles.includes("COMPANY")) {
+      return "Company Dashboard";
+    } else if (user.roles.includes("COMPANY_USER")) {
+      return "Company User Dashboard";
+    } else if (user.roles.includes("INDIVIDUAL_USER")) {
+      return "My Dashboard";
+    }
+    return "Dashboard";
+  };
+
+  // Function to get subtitle based on user role
+  const getSubtitle = () => {
+    if (!user?.roles) return "CSSL NITC 2025";
+    
+    if (user.roles.includes("SUPER_ADMIN")) {
+      return "CSSL NITC 2025 - Admin Panel";
+    } else if (user.roles.includes("COMPANY")) {
+      return "CSSL NITC 2025 - Company Portal";
+    } else if (user.roles.includes("COMPANY_USER")) {
+      return "CSSL NITC 2025 - Company User";
+    } else if (user.roles.includes("INDIVIDUAL_USER")) {
+      return "CSSL NITC 2025 - My Account";
+    }
+    return "CSSL NITC 2025";
   };
 
   return (
@@ -47,8 +79,8 @@ export default function DashboardLayout({
           }`}
       >
         <AppBar
-          title="Admin Dashboard"
-          subtitle="NIT Conference 2025"
+          title={getTitle()}
+          subtitle={getSubtitle()}
           onLogout={handleLogout}
         />
         <main className="flex-1 overflow-auto">{children}</main>

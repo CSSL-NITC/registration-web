@@ -79,7 +79,7 @@ export default function Page() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Welcome back!</h1>
-          <p className="text-gray-600 dark:text-gray-400">Here's what's happening with NIT Conference 2025.</p>
+          <p className="text-gray-600 dark:text-gray-400">Here's what's happening with CSSL NITC 2025.</p>
         </div>
         <div className="flex items-center space-x-4">
           <Button variant="outline" className="hidden sm:flex bg-transparent">

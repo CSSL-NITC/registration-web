@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -26,16 +27,6 @@ interface SidebarProps {
   onToggleCollapse?: () => void
 }
 
-const navigation = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Registrations", href: "/admin/registrations", icon: Users },
-  { name: "Companies", href: "/admin/companies", icon: Building2 },
-  { name: "Payments", href: "/admin/payments", icon: CreditCard },
-  { name: "QR Codes", href: "/admin/qr-codes", icon: QrCode },
-  { name: "Reports", href: "/admin/reports", icon: FileText },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
-]
-
 export function Sidebar({ onLogout, collapsed = false, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useAuth();
@@ -56,13 +47,15 @@ export function Sidebar({ onLogout, collapsed = false, onToggleCollapse }: Sideb
           )}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-800 to-indigo-800 dark:from-blue-600 dark:to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
             {!collapsed && (
-              <div className="min-w-0">
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">NIT Admin</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">Conference 2025</p>
+              <div className="relative w-32 h-10"> {/* Adjust width/height as needed */}
+                <Image
+                  src="https://res.cloudinary.com/djxtjt1uf/image/upload/v1753804463/NITC-Logo-7c1f04fc_qobxl1.png"
+                  alt="NITC Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
               </div>
             )}
           </div>
