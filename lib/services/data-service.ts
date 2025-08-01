@@ -1,13 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import toastService from "./toast-service";
 import jwtService from "./jwt-service";
-import { PUBLIC_PAGES } from "../constants/common";
-import routerService from "./router-service";
-import loginEndpoints from "../endpoints/login-endpoints";
-import {
-  DEFAULT_CONTACT_ADMIN,
-  INVALID_CREDENTIALS,
-} from "../constants/message-constants";
+import { DEFAULT_CONTACT_ADMIN } from "../constants/message-constants";
 
 interface AppAxiosRequestConfig extends AxiosRequestConfig {
   headers?: any;
@@ -42,13 +36,26 @@ class DataService {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        const expectedError =
-          error.response && error.response >= 400 && error.response < 500;
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
 
-        if (!expectedError) {
-          error.response.data.errors.forEach((message: string) =>
-            toastService.showErrorMessage(message)
-          );
+          const isExpectedError = status && status >= 400 && status < 500;
+
+          if (!isExpectedError) {
+            const errors = error.response?.data?.errors;
+            if (Array.isArray(errors) && errors.length > 0) {
+              errors.forEach((message: string) =>
+                toastService.showErrorMessage(message)
+              );
+            } else {
+              toastService.showErrorMessage(DEFAULT_CONTACT_ADMIN);
+            }
+          }
+
+          // Optionally handle specific status codes
+          if (status === 401) {
+            // redirect to login or logout
+          }
         }
 
         return Promise.reject(error);
@@ -109,6 +116,10 @@ class DataService {
           method === "PATCH")
       ) {
         config.data = JSON.stringify(data);
+      }
+
+      if (method === "GET" && data) {
+        config.params = data;
       }
     }
 
