@@ -51,7 +51,7 @@ const SCHEDULE_ITEMS: Record<ScheduleTabId, ScheduleItem[]> = {
     { time: '7.55 PM Onwards', description: 'Keynote Address by <span class="font-bold text-blue-800">Mr. Shanaka de Silva</span>, Group Finance Director at South Asian Technologies Group' },
     { time: '8.15 PM Onwards', description: 'Recognition of Sponsors NITC 2025' },
     { time: '8.35 PM Onwards', description: 'Vote of Thanks by <span class="font-bold text-blue-800">Dr. Amal Illesinghe</span>, Conference Chair - NITC 2025' },
-    { time: '8.45 PM Onwards', description: 'Fellowship and Cocktail' }
+    // { time: '8.45 PM Onwards', description: 'Fellowship and Cocktail' }
   ],
   day1: [
     { time: '9.00 AM', description: 'Registration & Coffee' },

@@ -1,14 +1,39 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
+import { onRegistrationInit } from "@/lib/api/registration-api"
+import { PredefinedRole } from "@/lib/constants/@types"
+import { isAlreadyUsed } from "@/lib/utils/email-vaildation-utils"
 import { useState } from "react"
-import { PersonalInformationForm } from "./forms/personal-information-form"
-import { PackageSelectionForm } from "./forms/package-selection-form"
+import { toast } from "sonner"
 import { MembershipDiscountForm } from "./forms/membership-discount-form"
+import { PackageSelectionForm } from "./forms/package-selection-form"
+import { PersonalInformationForm } from "./forms/personal-information-form"
 import { EmailVerificationStep } from "./steps/email-verification-step"
 import { PaymentSummaryStep } from "./steps/payment-summary-step"
-import { SuccessStep } from "./steps/success-step"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+import { IframeViewer } from "../iframe-veiwer"
+
+export interface CompanyCreateRQ {
+  name: string;
+  address: string;
+}
+
+export interface RegistrationRequest {
+  userType: string;
+  password: string;
+  mobile: string;
+  firstName: string;
+  lastName: string;
+  designation: string;
+  email: string;
+  nic?: string;
+  workplace?: string;
+  packages?: number[];
+  company?: CompanyCreateRQ;
+  address?: string;
+  membershipCode?: string;
+  discountId?: number;
+}
 
 export interface IndividualFormData {
   title: string;
@@ -21,6 +46,8 @@ export interface IndividualFormData {
   designation: string;
   password: string;
   package: string;
+  packageIds: number[];
+  packageNames: string[];
   isCSSLMember: boolean;
   csslMembershipId: string;
   isEarlyBird: boolean;
@@ -31,9 +58,23 @@ export interface IndividualFormData {
   isSLASSCOMMember: boolean;
   isIEEEMember: boolean;
   memberId: string;
+  discountId?: number;
+}
+
+interface RegistrationInitResponseData {
+  reqid: string;
+  expireAt: string;
+  paymentPageUrl: string;
+}
+
+interface RegistrationInitResponse {
+  messageId: string;
+  responseData: RegistrationInitResponseData;
 }
 
 export function IndividualRegistration() {
+  const [registrationInitResponse, setRegistrationInitResponse] = useState<RegistrationInitResponse | undefined>(undefined);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [formData, setFormData] = useState<IndividualFormData>({
     title: "Mr.",
     firstName: "",
@@ -45,6 +86,8 @@ export function IndividualRegistration() {
     designation: "",
     password: "",
     package: "",
+    packageIds: [],
+    packageNames: [],
     isCSSLMember: false,
     csslMembershipId: "",
     isEarlyBird: true,
@@ -57,9 +100,10 @@ export function IndividualRegistration() {
     memberId: "",
   })
 
-  const [step, setStep] = useState(1) // 1: Registration, 2: Email Verification, 3: Payment, 4: Success
+  const [step, setStep] = useState(1)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -74,8 +118,10 @@ export function IndividualRegistration() {
     if (!formData.designation.trim()) newErrors.designation = "Designation is required"
     if (!formData.password.trim()) newErrors.password = "Password is required"
 
-    // Package Validation
-    if (!formData.package) newErrors.package = "Please select a conference package"
+    // Package Validation - now checking packageId instead of package
+    if (formData.packageIds.length === 0) {
+      newErrors.package = "Please select at least one conference package"
+    }
 
     // CSSL Member Validation
     if (formData.isCSSLMember && !formData.csslMembershipId.trim()) {
@@ -83,9 +129,9 @@ export function IndividualRegistration() {
     }
 
     // Other Member Validation
-    if ((formData.isBCSMember || formData.isISACAMember || formData.isIESLMember || 
-         formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember) && 
-        !formData.memberId.trim()) {
+    if ((formData.isBCSMember || formData.isISACAMember || formData.isIESLMember ||
+      formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember) &&
+      !formData.memberId.trim()) {
       newErrors.memberId = "Member ID is required"
     }
 
@@ -93,35 +139,64 @@ export function IndividualRegistration() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error("Please fill in all required fields")
       return
     }
 
-    setStep(2)
+    isAlreadyUsed(formData.email, () => { setStep(2) });
   }
 
   const handleBackToForm = () => {
     setStep(1)
   }
 
-  const handleEmailVerified = () => {
-    setStep(3)
-  }
+  // discount and payment should go with this
+  const handlePaymentComplete = async () => {
+    const request: RegistrationRequest = {
+      userType: PredefinedRole.INDIVIDUAL_USER,
+      password: formData.password,
+      mobile: formData.mobile,
+      nic: formData.nic,
+      firstName: `${formData.title} ${formData.firstName}`,
+      lastName: formData.lastName,
+      email: formData.email,
+      packages: formData.packageIds,
+      designation: formData.designation,
+      workplace: formData.workplace,
+      membershipCode: formData.csslMembershipId,
+      discountId: formData.discountId,
+    };
 
-  const handlePaymentComplete = () => {
-    setStep(4)
+    console.log(request);
+
+    try {
+      setLoading(true); // Show loading state
+      const response = await onRegistrationInit(request);
+      setRegistrationInitResponse(response.data);
+      console.log("Initiate payment popup")
+      console.log(response.data);
+      setShowPaymentModal(true); // Now show the modal
+      // openPaymentModel(response.data?.responseData?.paymentPageUrl);
+      console.log("showPaymentModal set to true");
+    } catch (error) {
+      console.error("Payment initialization failed:", error);
+      toast.error("Failed to initialize payment");
+    } finally {
+      setLoading(false); // Hide loading state
+    }
+
   }
 
   if (step === 2) {
     return (
-      <EmailVerificationStep 
+      <EmailVerificationStep
         email={formData.email}
-        onVerified={handleEmailVerified}
-        onBack={handleBackToForm}
+        onNext={() => setStep(3)}
+        onBack={() => setStep(1)}
         loading={loading}
       />
     )
@@ -129,18 +204,34 @@ export function IndividualRegistration() {
 
   if (step === 3) {
     return (
-      <PaymentSummaryStep 
-        formData={formData}
-        onPaymentComplete={handlePaymentComplete}
-        onBack={handleBackToForm}
-        loading={loading}
-      />
+      <>
+        <PaymentSummaryStep
+          formData={formData}
+          onPaymentComplete={handlePaymentComplete}
+          onBack={handleBackToForm}
+          loading={loading}
+        />
+        {showPaymentModal && registrationInitResponse?.responseData?.paymentPageUrl && (
+          <IframeViewer 
+            open={showPaymentModal}
+            url={registrationInitResponse.responseData.paymentPageUrl}
+            onClose={() => setShowPaymentModal(false)}
+          />
+        )}
+      </>
     )
   }
 
-  if (step === 4) {
-    return <SuccessStep />
-  }
+  // if (showPaymentModal && registrationInitResponse?.responseData?.paymentPageUrl) {
+  //   console.log("Called payment popup")
+  //   console.log(registrationInitResponse.responseData.paymentPageUrl)
+  //   return (
+  //     <IframeViewer 
+  //       url={registrationInitResponse.responseData.paymentPageUrl}
+  //       onClose={() => setShowPaymentModal(false)}
+  //     />
+  //   )
+  // }
 
   return (
     <div className="max-w-4xl mx-auto font-['Roboto']">
@@ -154,21 +245,21 @@ export function IndividualRegistration() {
           </div>
 
           <form onSubmit={handleFormSubmit} className="space-y-12">
-            <PersonalInformationForm 
+            <PersonalInformationForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}
               setErrors={setErrors}
             />
 
-            <PackageSelectionForm 
+            <PackageSelectionForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}
               setErrors={setErrors}
             />
 
-            <MembershipDiscountForm 
+            <MembershipDiscountForm
               formData={formData}
               setFormData={setFormData}
               errors={errors}
@@ -189,4 +280,4 @@ export function IndividualRegistration() {
       </div>
     </div>
   )
-} 
+}

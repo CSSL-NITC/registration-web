@@ -30,12 +30,12 @@ const RouteGuard = ({ children }: { children: ReactNode }) => {
     // Dashboard routes auth
     switch (currentPath) {
       case DashboardPages.DASHBOARD:
-        if (user.privileges.includes(Privileges.VIEW_DASHBOARD)) {
+        if (user?.privileges.includes(Privileges.VIEW_DASHBOARD)) {
           canAccess = true;
         }
         break;
       case DashboardPages.REGISTRATIONS:
-        if (user.privileges.includes(Privileges.VIEW_REGISTRATION)) {
+        if (user?.privileges.includes(Privileges.VIEW_REGISTRATION)) {
           canAccess = true;
         }
         break;

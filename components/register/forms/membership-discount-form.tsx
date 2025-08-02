@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { Calendar, Star, Building2, CheckCircle2, XCircle } from "lucide-react"
-import { validateMember } from "@/lib/mock-api/registrations"
+import { onMembershipValidation } from "@/lib/api/registration-api"
+import toastService from "@/lib/services/toast-service"
+import { Building2, Calendar, CheckCircle2, Star, XCircle } from "lucide-react"
+import { useState } from "react"
 import { IndividualFormData } from "../individual-registration"
 
 interface MembershipDiscountFormProps {
@@ -16,7 +17,7 @@ interface MembershipDiscountFormProps {
   setErrors: (errors: Record<string, string>) => void
 }
 
-type DiscountType = 
+type DiscountType =
   | 'isEarlyBird'
   | 'isCSSLMember'
   | 'isBCSMember'
@@ -26,8 +27,26 @@ type DiscountType =
   | 'isSLASSCOMMember'
   | 'isIEEEMember'
 
+type DiscountOption = {
+    id: number;
+    key: DiscountType;
+    label: string;
+    discountPercentage: number;
+  }
+
 export function MembershipDiscountForm({ formData, setFormData, errors, setErrors }: MembershipDiscountFormProps) {
   const [memberValidation, setMemberValidation] = useState<{ valid: boolean; loading: boolean; message: string }>({ valid: false, loading: false, message: "" })
+
+  const discountOptions: DiscountOption[] = [
+    { id: 1, key: 'isEarlyBird', label: 'Early Bird', discountPercentage: 10 },
+    { id: 2, key: 'isCSSLMember', label: 'CSSL Member', discountPercentage: 20 },
+    { id: 3, key: 'isBCSMember', label: 'BCS', discountPercentage: 10 },
+    { id: 4, key: 'isISACAMember', label: 'ISACA', discountPercentage: 10 },
+    { id: 5, key: 'isIESLMember', label: 'IESL', discountPercentage: 10 },
+    { id: 6, key: 'isFITISMember', label: 'FITIS', discountPercentage: 10 },
+    { id: 7, key: 'isSLASSCOMMember', label: 'SLASSCOM', discountPercentage: 10 },
+    { id: 8, key: 'isIEEEMember', label: 'IEEE', discountPercentage: 10 },
+  ];
 
   const handleDiscountSelect = (discountType: DiscountType, checked: boolean) => {
     // Reset all discount flags
@@ -42,18 +61,24 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
       isIEEEMember: false,
       csslMembershipId: "",
       memberId: "",
+      discountId: 0,
     }
 
     // Set the selected discount
     if (checked) {
       resetDiscounts[discountType] = true
+
+      const selectedDiscount = discountOptions.find(opt => opt.key === discountType);
+      if (selectedDiscount) {
+        resetDiscounts.discountId = selectedDiscount.id;
+      }
     }
 
     setFormData({ ...formData, ...resetDiscounts })
-    
+
     // Clear validation state
     setMemberValidation({ valid: false, loading: false, message: "" })
-    
+
     // Clear errors
     if (errors.csslMembershipId || errors.memberId) {
       const newErrors = { ...errors }
@@ -75,22 +100,28 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
 
   const validateMemberId = async () => {
     if (!formData.csslMembershipId.trim()) return
-
+    if (!formData.nic.trim()) {
+      toastService.showErrorMessage("NIC is should be filed");
+      return;
+    }
     setMemberValidation({ valid: false, loading: true, message: "" })
-    
+   
     try {
-      const result = await validateMember(formData.csslMembershipId, "CSSL")
-      
+      const result = await onMembershipValidation({
+        nic: formData.nic,
+        code: formData.csslMembershipId
+      })
+
       setMemberValidation({
-        valid: result.valid,
+        valid: true,
         loading: false,
-        message: result.valid ? "Valid CSSL member ID" : "Invalid CSSL member ID"
+        message: "Valid CSSL member ID",
       })
     } catch (error) {
       setMemberValidation({
         valid: false,
         loading: false,
-        message: "Validation failed"
+        message: "Invalid CSSL member ID"
       })
     }
   }
@@ -106,11 +137,10 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Early Bird */}
-        <div className={`border-2 rounded-xl p-6 transition-all duration-200 ${
-          formData.isEarlyBird 
-            ? "border-orange-300 bg-orange-50" 
-            : "border-slate-200 bg-white hover:border-orange-200"
-        }`}>
+        <div className={`border-2 rounded-xl p-6 transition-all duration-200 ${formData.isEarlyBird
+          ? "border-orange-300 bg-orange-50"
+          : "border-slate-200 bg-white hover:border-orange-200"
+          }`}>
           <div className="flex items-center space-x-3 mb-4">
             <Calendar className="w-6 h-6 text-orange-600" />
             <Label className="text-lg font-medium text-slate-800">
@@ -119,7 +149,7 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
           </div>
           <div className="text-2xl font-bold text-orange-600 mb-2">10% OFF</div>
           <p className="text-sm text-slate-700 mb-4">
-            Until 30th August 2025
+            Until 10th September 2025
           </p>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -135,11 +165,10 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
         </div>
 
         {/* CSSL Members */}
-        <div className={`border-2 rounded-xl p-6 transition-all duration-200 ${
-          formData.isCSSLMember 
-            ? "border-slate-300 bg-slate-50" 
-            : "border-slate-200 bg-white hover:border-slate-300"
-        }`}>
+        <div className={`border-2 rounded-xl p-6 transition-all duration-200 ${formData.isCSSLMember
+          ? "border-slate-300 bg-slate-50"
+          : "border-slate-200 bg-white hover:border-slate-300"
+          }`}>
           <div className="flex items-center space-x-3 mb-4">
             <Star className="w-6 h-6 text-slate-600" />
             <Label className="text-lg font-medium text-slate-800">
@@ -164,12 +193,11 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
         </div>
 
         {/* Other Members */}
-        <div className={`border-2 rounded-xl p-6 transition-all duration-200 ${
-          (formData.isBCSMember || formData.isISACAMember || formData.isIESLMember || 
-           formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember)
-            ? "border-green-300 bg-green-50" 
-            : "border-slate-200 bg-white hover:border-green-200"
-        }`}>
+        <div className={`border-2 rounded-xl p-6 transition-all duration-200 ${(formData.isBCSMember || formData.isISACAMember || formData.isIESLMember ||
+          formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember)
+          ? "border-green-300 bg-green-50"
+          : "border-slate-200 bg-white hover:border-green-200"
+          }`}>
           <div className="flex items-center space-x-3 mb-4">
             <Building2 className="w-6 h-6 text-green-600" />
             <Label className="text-lg font-medium text-slate-800">
@@ -193,7 +221,7 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
                 <Checkbox
                   id={member.id}
                   checked={formData[member.key as keyof IndividualFormData] as boolean}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     handleDiscountSelect(member.key as DiscountType, checked as boolean)
                   }
                   className="border-slate-300 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
@@ -218,9 +246,8 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
               id="cssl-id"
               value={formData.csslMembershipId}
               onChange={(e) => handleMemberIdChange("csslMembershipId", e.target.value)}
-              className={`flex-1 px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors ${
-                errors.csslMembershipId ? "border-red-500" : "border-slate-300"
-              }`}
+              className={`flex-1 px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors ${errors.csslMembershipId ? "border-red-500" : "border-slate-300"
+                }`}
               placeholder="Enter your CSSL membership ID"
             />
             <Button
@@ -234,9 +261,8 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
           </div>
           {errors.csslMembershipId && <p className="text-red-500 text-sm mt-1">{errors.csslMembershipId}</p>}
           {memberValidation.message && (
-            <div className={`flex items-center mt-2 text-sm ${
-              memberValidation.valid ? "text-green-600" : "text-red-600"
-            }`}>
+            <div className={`flex items-center mt-2 text-sm ${memberValidation.valid ? "text-green-600" : "text-red-600"
+              }`}>
               {memberValidation.valid ? (
                 <CheckCircle2 className="w-4 h-4 mr-1" />
               ) : (
@@ -258,9 +284,8 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
             id="member-id"
             value={formData.memberId}
             onChange={(e) => handleMemberIdChange("memberId", e.target.value)}
-            className={`w-full px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors ${
-              errors.memberId ? "border-red-500" : "border-slate-300"
-            }`}
+            className={`w-full px-4 py-3 bg-white text-slate-900 border rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-colors ${errors.memberId ? "border-red-500" : "border-slate-300"
+              }`}
             placeholder="Enter your member ID"
           />
           {errors.memberId && <p className="text-red-500 text-sm mt-1">{errors.memberId}</p>}

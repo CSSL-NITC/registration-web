@@ -2,7 +2,7 @@ import { ExternalToast, toast } from "sonner";
 
 class ToastService {
   private defaultSettings: ExternalToast = {
-    position: "top-right",
+    // position: "top-right",
   };
   showDefaultMessage = (message: string) => {
     toast(message, {
@@ -25,9 +25,6 @@ class ToastService {
   showErrorMessage = (message: string) => {
     toast.error(message, {
       ...this.defaultSettings,
-      style: {
-        background: "red",
-      },
     });
   };
 }

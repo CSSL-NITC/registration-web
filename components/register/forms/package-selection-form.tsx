@@ -5,6 +5,19 @@ import { CheckCircle, DollarSign, Calendar, Users, Award, Sparkles } from "lucid
 import { IndividualFormData } from "../individual-registration"
 import { toast } from "sonner"
 
+interface Package {
+  id: number
+  identifier: string
+  name: string
+  price: number
+  usdPrice: number
+  summary: string
+  icon: React.ComponentType<{ className?: string }>
+  color: string
+  popular?: boolean
+  includes: string[]
+}
+
 interface PackageSelectionFormProps {
   formData: IndividualFormData
   setFormData: (data: IndividualFormData) => void
@@ -12,9 +25,10 @@ interface PackageSelectionFormProps {
   setErrors: (errors: Record<string, string>) => void
 }
 
-const packages = [
+const packages: Package[] = [
   {
-    id: "all3",
+    id: 1,
+    identifier: "FULL_CONFERENCE_PACKAGE",
     name: "FULL CONFERENCE PACKAGE",
     price: 50000,
     usdPrice: 250,
@@ -25,7 +39,8 @@ const packages = [
     includes: ["Inauguration", "Day 1 Sessions", "Day 2 Sessions", "Gala Dinner", "Networking"]
   },
   {
-    id: "day1",
+    id: 2,
+    identifier: "INAUGURATION_CEREMONY",
     name: "INAUGURATION CEREMONY",
     price: 20000,
     usdPrice: 100,
@@ -35,7 +50,8 @@ const packages = [
     includes: ["Opening Ceremony", "Keynote Speeches", "Awards", "Gala Dinner"]
   },
   {
-    id: "day1-2",
+    id: 3,
+    identifier: "CONFERENCE_DAY_1",
     name: "CONFERENCE DAY 1",
     price: 15000,
     usdPrice: 75,
@@ -45,7 +61,8 @@ const packages = [
     includes: ["Keynotes", "Panel Discussions", "Technical Sessions", "Tea, Snacks & Lunch"]
   },
   {
-    id: "day2-3",
+    id: 4,
+    identifier: "CONFERENCE_DAY_2",
     name: "CONFERENCE DAY 2",
     price: 15000,
     usdPrice: 75,
@@ -56,20 +73,23 @@ const packages = [
   },
 ]
 
-export function PackageSelectionForm({ formData, setFormData, errors, setErrors }: PackageSelectionFormProps) {
-  const [selectedPackages, setSelectedPackages] = useState<string[]>(formData.package ? [formData.package] : [])
+const FULL_CONFERENCE_ID = 1
+const INDIVIDUAL_PACKAGE_IDS = [2, 3, 4]
 
-  const handlePackageSelect = (packageId: string) => {
+export function PackageSelectionForm({ formData, setFormData, errors, setErrors }: PackageSelectionFormProps) {
+  const [selectedPackages, setSelectedPackages] = useState<number[]>(formData.packageIds || [])
+
+  const handlePackageSelect = (packageId: number) => {
     let newSelectedPackages = [...selectedPackages]
-    
+
     // Handle full conference package selection
-    if (packageId === "all3") {
-      if (newSelectedPackages.includes("all3")) {
+    if (packageId === FULL_CONFERENCE_ID) {
+      if (newSelectedPackages.includes(FULL_CONFERENCE_ID)) {
         // Deselect full conference if already selected
-        newSelectedPackages = newSelectedPackages.filter(id => id !== "all3")
+        newSelectedPackages = newSelectedPackages.filter(id => id !== FULL_CONFERENCE_ID)
       } else {
         // Select full conference and deselect others
-        newSelectedPackages = ["all3"]
+        newSelectedPackages = [FULL_CONFERENCE_ID]
         toast.success("Full Conference package selected! This includes all events.")
       }
     } else {
@@ -79,7 +99,7 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
         newSelectedPackages = newSelectedPackages.filter(id => id !== packageId)
       } else {
         // Can't select individual with full conference
-        if (newSelectedPackages.includes("all3")) {
+        if (newSelectedPackages.includes(FULL_CONFERENCE_ID)) {
           toast.info("Please deselect Full Conference package first to select individual days")
           return
         }
@@ -87,22 +107,33 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
         newSelectedPackages.push(packageId)
         
         // Check if all individual packages are selected
-        const individualPackages = ["day1", "day1-2", "day2-3"]
-        const hasAllIndividual = individualPackages.every(id => newSelectedPackages.includes(id))
+        const hasAllIndividual = INDIVIDUAL_PACKAGE_IDS.every(id => newSelectedPackages.includes(id))
         
         if (hasAllIndividual) {
-          newSelectedPackages = ["all3"]
+          newSelectedPackages = [FULL_CONFERENCE_ID]
           toast.success("We've upgraded you to the Full Conference package for better value!")
         }
       }
     }
 
     setSelectedPackages(newSelectedPackages)
-    setFormData({ ...formData, package: newSelectedPackages[0] || "" })
     
-    if (errors.package) {
+    // Update form data with both IDs and names
+    const selectedPackageNames = newSelectedPackages.map(id => 
+      packages.find(pkg => pkg.id === id)?.name || ""
+    )
+    
+    setFormData({ 
+      ...formData, 
+      packageIds: newSelectedPackages,
+      packageNames: selectedPackageNames,
+    })
+
+    console.log(selectedPackageNames);
+
+    if (errors.packageIds) {
       const newErrors = { ...errors }
-      delete newErrors.package
+      delete newErrors.packageIds
       setErrors(newErrors)
     }
   }
@@ -120,10 +151,10 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
         {packages.map((pkg) => {
           const IconComponent = pkg.icon
           const isSelected = selectedPackages.includes(pkg.id)
-          const isFullConference = pkg.id === "all3"
+          const isFullConference = pkg.id === FULL_CONFERENCE_ID
 
           return (
-            <div 
+            <div
               key={pkg.id}
               className={`relative transition-all duration-200 rounded-xl overflow-hidden border
                 ${isSelected ? "ring-2 ring-blue-500 ring-offset-2" : "border-gray-200 hover:border-[#232c7c]"}
@@ -214,9 +245,9 @@ export function PackageSelectionForm({ formData, setFormData, errors, setErrors 
         </div>
       )}
 
-      {errors.package && (
+      {errors.packageIds && (
         <div className="mt-2 text-center">
-          <p className="text-red-500 text-sm">{errors.package}</p>
+          <p className="text-red-500 text-sm">{errors.packageIds}</p>
         </div>
       )}
 
