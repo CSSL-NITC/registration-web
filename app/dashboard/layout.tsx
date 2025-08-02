@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/contexts/auth-provider";
 import jwtService from "@/lib/services/jwt-service";
 import routerService from "@/lib/services/router-service";
 import { useAppDispatch } from "@/lib/store";
-import type React from "react";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export default function DashboardLayout({
@@ -18,13 +18,25 @@ export default function DashboardLayout({
 }) {
   const { user } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const dispatch = useAppDispatch();
+
+  // Close mobile sidebar when resizing to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (user) {
       let userID: number = user.userID;
-      console.log(user)
-      dispatch(getUser(userID))
+      dispatch(getUser(userID));
     }
   }, [user?.userID]);
 
@@ -35,7 +47,6 @@ export default function DashboardLayout({
     });
   };
 
-  // Function to get title based on user role
   const getTitle = () => {
     if (!user?.roles) return "Dashboard";
     
@@ -51,7 +62,6 @@ export default function DashboardLayout({
     return "Dashboard";
   };
 
-  // Function to get subtitle based on user role
   const getSubtitle = () => {
     if (!user?.roles) return "CSSL NITC 2025";
     
@@ -67,23 +77,48 @@ export default function DashboardLayout({
     return "CSSL NITC 2025";
   };
 
+  const toggleMobileSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
+  };
+
+  const toggleDesktopSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      {/* Mobile Sidebar Overlay */}
+      <div
+        className={cn(
+          "fixed inset-0 bg-black/50 lg:hidden z-40 transition-opacity duration-300",
+          mobileSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        onClick={toggleMobileSidebar}
+      />
+
+      {/* Sidebar */}
       <Sidebar
         onLogout={handleLogout}
         collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onToggleCollapse={toggleDesktopSidebar}
+        mobileOpen={mobileSidebarOpen}
+        onMobileToggle={toggleMobileSidebar}
       />
+
+      {/* Main Content */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
-          }`}
+        className={cn(
+          "flex-1 flex flex-col transition-all duration-300",
+          sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+        )}
       >
         <AppBar
           title={getTitle()}
           subtitle={getSubtitle()}
           onLogout={handleLogout}
+          onMenuClick={toggleMobileSidebar}
         />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );

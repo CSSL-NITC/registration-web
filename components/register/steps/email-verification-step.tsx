@@ -84,7 +84,7 @@ export function EmailVerificationStep({ email, onNext, onBack, loading }: EmailV
 
             <Button
               onClick={handleEmailVerification}
-              className="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black shadow-lg hover:shadow-xl transition-all duration-200"
+              className="w-full bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black shadow-lg hover:shadow-xl transition-all duration-200 text-white"
               disabled={loading || verificationCode.length !== 6}
             >
               {loading ? "Verifying..." : "Verify Code"}
@@ -93,7 +93,7 @@ export function EmailVerificationStep({ email, onNext, onBack, loading }: EmailV
             <Button
               onClick={handleResendCode}
               variant="outline"
-              className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
+              className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 text-white"
               disabled={verifying}
             >
               {verifying ? "Sending..." : "Resend Code"}
@@ -103,7 +103,7 @@ export function EmailVerificationStep({ email, onNext, onBack, loading }: EmailV
           <Button
             variant="outline"
             onClick={onBack}
-            className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
+            className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Registration

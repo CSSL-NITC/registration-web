@@ -6,13 +6,12 @@ import { PredefinedRole } from "@/lib/constants/@types"
 import { isAlreadyUsed } from "@/lib/utils/email-vaildation-utils"
 import { useState } from "react"
 import { toast } from "sonner"
-import IframeViewer from "../iframe-veiwer"
 import { MembershipDiscountForm } from "./forms/membership-discount-form"
 import { PackageSelectionForm } from "./forms/package-selection-form"
 import { PersonalInformationForm } from "./forms/personal-information-form"
 import { EmailVerificationStep } from "./steps/email-verification-step"
 import { PaymentSummaryStep } from "./steps/payment-summary-step"
-
+import { IframeViewer } from "../iframe-veiwer"
 
 export interface CompanyCreateRQ {
   name: string;
@@ -33,6 +32,7 @@ export interface RegistrationRequest {
   company?: CompanyCreateRQ;
   address?: string;
   membershipCode?: string;
+  discountId?: number;
 }
 
 export interface IndividualFormData {
@@ -46,6 +46,8 @@ export interface IndividualFormData {
   designation: string;
   password: string;
   package: string;
+  packageIds: number[];
+  packageNames: string[];
   isCSSLMember: boolean;
   csslMembershipId: string;
   isEarlyBird: boolean;
@@ -56,6 +58,7 @@ export interface IndividualFormData {
   isSLASSCOMMember: boolean;
   isIEEEMember: boolean;
   memberId: string;
+  discountId?: number;
 }
 
 interface RegistrationInitResponseData {
@@ -69,9 +72,9 @@ interface RegistrationInitResponse {
   responseData: RegistrationInitResponseData;
 }
 
-
 export function IndividualRegistration() {
   const [registrationInitResponse, setRegistrationInitResponse] = useState<RegistrationInitResponse | undefined>(undefined);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [formData, setFormData] = useState<IndividualFormData>({
     title: "Mr.",
     firstName: "",
@@ -83,6 +86,8 @@ export function IndividualRegistration() {
     designation: "",
     password: "",
     package: "",
+    packageIds: [],
+    packageNames: [],
     isCSSLMember: false,
     csslMembershipId: "",
     isEarlyBird: true,
@@ -95,7 +100,7 @@ export function IndividualRegistration() {
     memberId: "",
   })
 
-  const [step, setStep] = useState(1) // 1: Registration, 2: Email Verification, 3: Payment, 4: Success
+  const [step, setStep] = useState(1)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -113,8 +118,10 @@ export function IndividualRegistration() {
     if (!formData.designation.trim()) newErrors.designation = "Designation is required"
     if (!formData.password.trim()) newErrors.password = "Password is required"
 
-    // Package Validation
-    if (!formData.package) newErrors.package = "Please select a conference package"
+    // Package Validation - now checking packageId instead of package
+    if (formData.packageIds.length === 0) {
+      newErrors.package = "Please select at least one conference package"
+    }
 
     // CSSL Member Validation
     if (formData.isCSSLMember && !formData.csslMembershipId.trim()) {
@@ -133,8 +140,6 @@ export function IndividualRegistration() {
   }
 
   const handleFormSubmit = async (e: React.FormEvent) => {
-    console.log("formData: ", formData.package)
-
     e.preventDefault()
 
     if (!validateForm()) {
@@ -143,13 +148,13 @@ export function IndividualRegistration() {
     }
 
     isAlreadyUsed(formData.email, () => { setStep(2) });
-
   }
 
   const handleBackToForm = () => {
     setStep(1)
   }
 
+  // discount and payment should go with this
   const handlePaymentComplete = () => {
     const request: RegistrationRequest = {
       userType: PredefinedRole.INDIVIDUAL_USER,
@@ -159,19 +164,20 @@ export function IndividualRegistration() {
       firstName: `${formData.title} ${formData.firstName}`,
       lastName: formData.lastName,
       email: formData.email,
-      packages: [1], // TODO: 
+      packages: formData.packageIds,
       designation: formData.designation,
       workplace: formData.workplace,
       membershipCode: formData.csslMembershipId,
+      discountId: formData.discountId,
     };
 
+    console.log(request);
 
     onRegistrationInit(request)
       .then(res => {
         setRegistrationInitResponse(res.data);
-        setStep(4)
+        setShowPaymentModal(true);
       }).catch(() => { });
-    // dispatch(setRegistrationRequest(request))
   }
 
   if (step === 2) {
@@ -196,14 +202,14 @@ export function IndividualRegistration() {
     )
   }
 
-  if (step === 4 && !!registrationInitResponse) {
-    const paymentPageUrl = registrationInitResponse.responseData.paymentPageUrl;
-    return <IframeViewer url={paymentPageUrl} />
+  if (showPaymentModal && !!registrationInitResponse) {
+    return (
+      <IframeViewer 
+        url={registrationInitResponse.responseData.paymentPageUrl}
+        onClose={() => setShowPaymentModal(false)}
+      />
+    )
   }
-
-  /* if (step === 4) {
-    return <SuccessStep />
-  } */
 
   return (
     <div className="max-w-4xl mx-auto font-['Roboto']">
@@ -252,4 +258,4 @@ export function IndividualRegistration() {
       </div>
     </div>
   )
-} 
+}

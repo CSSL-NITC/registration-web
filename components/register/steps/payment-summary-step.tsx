@@ -16,25 +16,29 @@ interface PaymentSummaryStepProps {
 
 const packages = [
   {
-    id: "all3",
+    id: 1,
+    identifier: "FULL_CONFERENCE_PACKAGE",
     name: "FULL CONFERENCE WITH INAUGURATION",
     price: 50000,
     usdPrice: 250,
   },
   {
-    id: "day1",
+    id: 2,
+    identifier: "INAUGURATION_CEREMONY",
     name: "INAUGURATION CEREMONY",
     price: 20000,
     usdPrice: 100,
   },
   {
-    id: "day1-2",
+    id: 3,
+    identifier: "CONFERENCE_DAY_1",
     name: "NITC CONFERENCE DAY 01",
     price: 15000,
     usdPrice: 75,
   },
   {
-    id: "day2-3",
+    id: 4,
+    identifier: "CONFERENCE_DAY_2",
     name: "NITC CONFERENCE DAY 02",
     price: 15000,
     usdPrice: 75,
@@ -42,13 +46,16 @@ const packages = [
 ]
 
 export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loading }: PaymentSummaryStepProps) {
-  const selectedPackage = packages.find((p) => p.id === formData.package)
-  const originalPrice = selectedPackage?.price || 0
-  const originalUSDPrice = selectedPackage?.usdPrice || 0
+  const selectedPackages = packages.filter((p) => formData.packageIds.includes(p.id));
+  
+  const originalPrice = selectedPackages.reduce((sum, pkg) => sum + pkg.price, 0);
+  const originalUSDPrice = selectedPackages.reduce((sum, pkg) => sum + pkg.usdPrice, 0);
   
   const getDiscountPercentage = () => {
     if (formData.isCSSLMember) return 20
-    if (formData.isEarlyBird || formData.isBCSMember || formData.isISACAMember || formData.isIESLMember || formData.isFITISMember || formData.isSLASSCOMMember || formData.isIEEEMember) return 10
+    if (formData.isEarlyBird || formData.isBCSMember || formData.isISACAMember || 
+        formData.isIESLMember || formData.isFITISMember || 
+        formData.isSLASSCOMMember || formData.isIEEEMember) return 10
     return 0
   }
   
@@ -61,15 +68,7 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
   return (
     <div className="max-w-2xl mx-auto font-['Roboto']">
       <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-md">
-        <CardHeader className="text-center pb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <CreditCard className="w-8 h-8 text-white" />
-          </div>
-          <CardTitle className="text-2xl font-bold text-slate-900">Payment Summary</CardTitle>
-          <CardDescription className="text-slate-600">
-            Complete your registration payment
-          </CardDescription>
-        </CardHeader>
+        {/* ... CardHeader remains the same ... */}
         <CardContent className="space-y-8">
           <div className="bg-gradient-to-r from-slate-50 to-blue-50 p-6 rounded-xl border border-slate-200">
             <h3 className="font-semibold text-lg mb-4 flex items-center text-slate-900">
@@ -85,9 +84,16 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
                 <p className="text-slate-600">Email</p>
                 <p className="font-medium text-slate-900">{formData.email}</p>
               </div>
-              <div>
-                <p className="text-slate-600">Package</p>
-                <p className="font-medium text-slate-900">{selectedPackage?.name}</p>
+              <div className="md:col-span-2">
+                <p className="text-slate-600">Selected Packages</p>
+                <div className="space-y-2 mt-1">
+                  {selectedPackages.map(pkg => (
+                    <div key={pkg.id} className="flex items-center">
+                      <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                      <span className="font-medium text-slate-900">{pkg.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div>
                 <p className="text-slate-600">Workplace</p>
@@ -110,8 +116,22 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
               Payment Breakdown
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-700">Package Price:</span>
+              {/* Package prices */}
+              {selectedPackages.map(pkg => (
+                <div key={pkg.id} className="flex justify-between items-center">
+                  <span className="text-slate-700">{pkg.name}:</span>
+                  <div className="text-right">
+                    <div className="font-medium text-slate-900">
+                      LKR {pkg.price.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-slate-500">${pkg.usdPrice}</div>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Subtotal */}
+              <div className="flex justify-between items-center pt-2 border-t border-green-200">
+                <span className="text-slate-700 font-medium">Subtotal:</span>
                 <div className="text-right">
                   <div className="font-medium text-slate-900">
                     LKR {originalPrice.toLocaleString()}
@@ -119,6 +139,8 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
                   <div className="text-sm text-slate-500">${originalUSDPrice}</div>
                 </div>
               </div>
+
+              {/* Discount */}
               {discount > 0 && (
                 <div className="flex justify-between items-center text-green-700">
                   <span>{discountPercentage}% Discount:</span>
@@ -128,6 +150,8 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
                   </div>
                 </div>
               )}
+              
+              {/* Total */}
               <hr className="border-green-200" />
               <div className="flex justify-between items-center text-lg font-bold">
                 <span className="text-slate-900">Total Amount:</span>
@@ -152,7 +176,7 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
           <div className="flex flex-col sm:flex-row gap-4">
             <Button
               onClick={onPaymentComplete}
-              className="flex-1 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black py-3 shadow-lg hover:shadow-xl transition-all duration-200"
+              className="flex-1 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black py-3 shadow-lg hover:shadow-xl transition-all duration-200 text-white"
               disabled={loading}
             >
               {loading ? "Processing..." : "Proceed to Payment"}
@@ -160,7 +184,7 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
             <Button
               variant="outline"
               onClick={onBack}
-              className="sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50"
+              className="sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 text-white"
             >
               Back to Form
             </Button>
@@ -169,4 +193,4 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
       </Card>
     </div>
   )
-} 
+}

@@ -27,8 +27,26 @@ type DiscountType =
   | 'isSLASSCOMMember'
   | 'isIEEEMember'
 
+type DiscountOption = {
+    id: number;
+    key: DiscountType;
+    label: string;
+    discountPercentage: number;
+  }
+
 export function MembershipDiscountForm({ formData, setFormData, errors, setErrors }: MembershipDiscountFormProps) {
   const [memberValidation, setMemberValidation] = useState<{ valid: boolean; loading: boolean; message: string }>({ valid: false, loading: false, message: "" })
+
+  const discountOptions: DiscountOption[] = [
+    { id: 1, key: 'isEarlyBird', label: 'Early Bird', discountPercentage: 10 },
+    { id: 2, key: 'isCSSLMember', label: 'CSSL Member', discountPercentage: 20 },
+    { id: 3, key: 'isBCSMember', label: 'BCS', discountPercentage: 10 },
+    { id: 4, key: 'isISACAMember', label: 'ISACA', discountPercentage: 10 },
+    { id: 5, key: 'isIESLMember', label: 'IESL', discountPercentage: 10 },
+    { id: 6, key: 'isFITISMember', label: 'FITIS', discountPercentage: 10 },
+    { id: 7, key: 'isSLASSCOMMember', label: 'SLASSCOM', discountPercentage: 10 },
+    { id: 8, key: 'isIEEEMember', label: 'IEEE', discountPercentage: 10 },
+  ];
 
   const handleDiscountSelect = (discountType: DiscountType, checked: boolean) => {
     // Reset all discount flags
@@ -43,11 +61,17 @@ export function MembershipDiscountForm({ formData, setFormData, errors, setError
       isIEEEMember: false,
       csslMembershipId: "",
       memberId: "",
+      discountId: 0,
     }
 
     // Set the selected discount
     if (checked) {
       resetDiscounts[discountType] = true
+
+      const selectedDiscount = discountOptions.find(opt => opt.key === discountType);
+      if (selectedDiscount) {
+        resetDiscounts.discountId = selectedDiscount.id;
+      }
     }
 
     setFormData({ ...formData, ...resetDiscounts })
