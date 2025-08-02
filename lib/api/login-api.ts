@@ -1,20 +1,19 @@
 import dataService from "@/lib/services/data-service";
 import loginEndpoints from "@/lib/endpoints/login-endpoints";
+import emailValidationEndpoints from './../endpoints/email-validation-endpoints';
 
 export async function onLogin(loginReq: any) {
   const response = await dataService.post(loginEndpoints.login, loginReq);
   return response;
 }
 
-export async function onForgotPassword(loginReq: any) {
-  // need to implement
-  const response = await dataService.post(loginEndpoints.login, loginReq);
+export async function onForgotPassword(req: any) {
+  const response = await dataService.post(emailValidationEndpoints.sendCode, req);
   return response;
 }
 
 export async function onResetPassword(loginReq: any) {
-  //need to implement
-  const response = await dataService.post(loginEndpoints.login, loginReq);
+  const response = await dataService.patch(loginEndpoints.resetPassword, loginReq);
   return response;
 }
 
@@ -26,18 +25,3 @@ export async function getApplicationProperties() {
   return await dataService.get(loginEndpoints.getApplicationProperties);
 }
 
-export async function onResetPasswordFromEmail(PasswordUpdateDTO: any) {
-  const response = await dataService.post(
-    loginEndpoints.resetPasswordFromEmail,
-    PasswordUpdateDTO,
-  );
-  return response;
-}
-
-export async function onConfirmPassword(UserValidateRQ: any) {
-  const response = await dataService.post(
-    loginEndpoints.onConfirmPassword,
-    UserValidateRQ,
-  );
-  return response;
-}

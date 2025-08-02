@@ -3,6 +3,8 @@
 //   PASSWORD_RESET_SUCCESSFULL,
 // } from "@/services/message-service/messages";
 
+import { PASSWORD_RESET_SUCCESSFULL } from "../constants/message-constants";
+
 let loginEndpoints = {
   login: {
     headerParam: {
@@ -31,27 +33,15 @@ let loginEndpoints = {
     url: "/api/v1/home/getApplicationProperties",
     type: "GET",
   },
-
-  resetPasswordFromEmail: {
+  resetPassword: {
     headerParam: {
       showLoading: true,
       showToast: true,
       skipAuth: true,
-    //   message: PASSWORD_RESET_REQUEST_SENT,
+      message: PASSWORD_RESET_SUCCESSFULL,
     },
-    url: "/api/v1/user/updateUserPassword",
-    type: "POST",
-  },
-
-  onConfirmPassword: {
-    headerParam: {
-      showLoading: true,
-      showToast: true,
-      skipAuth: true,
-    //   message: PASSWORD_RESET_SUCCESSFULL,
-    },
-    url: "/api/v1/user/updateUserForgetPassword",
-    type: "POST",
+    url: "/api/v1/users/update-password",
+    type: "PATCH",
   },
 };
 

@@ -38,11 +38,9 @@ class DataService {
       (error) => {
         if (axios.isAxiosError(error)) {
           const status = error.response?.status;
+          const errors = error.response?.data?.errors;
 
-          const isExpectedError = status && status >= 400 && status < 500;
-
-          if (!isExpectedError) {
-            const errors = error.response?.data?.errors;
+          if (error.config?.headers.showToast) {
             if (Array.isArray(errors) && errors.length > 0) {
               errors.forEach((message: string) =>
                 toastService.showErrorMessage(message)
@@ -64,10 +62,17 @@ class DataService {
 
     this.client.interceptors.request.use(
       (config) => {
-        const token = jwtService.getAccessToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        if (!config.headers.skipAuth) {
+          if (jwtService.isUserLoggedIn()) {
+            let accessToken = jwtService.getAccessToken();
+            config.headers.Authorization = "Bearer " + accessToken;
+          }
         }
+
+        if (config.headers.isFileUpload) {
+          config.headers["Content-Type"] = "multipart/form-data";
+        }
+
         return config;
       },
       (error) => {
@@ -85,6 +90,13 @@ class DataService {
       data = {};
     }
     return this.request(config.url!, "POST", data, config.headerParam!);
+  };
+
+  patch = (config: AppAxiosRequestConfig, data?: any) => {
+    if (!data) {
+      data = {};
+    }
+    return this.request(config.url!, "PATCH", data, config.headerParam!);
   };
 
   request = (

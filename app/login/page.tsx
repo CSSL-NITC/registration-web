@@ -64,17 +64,17 @@ const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-  type RoleRedirects = {
-    [key: string]: string;
-  };
-  
-  const ROLE_REDIRECTS: RoleRedirects = {
-    "SUPER ADMIN": "/dashboard",
-    "COMPANY": "/company-portal",
-    "COMPANY_USER": "/user/dashboard",
-    "INDIVIDUAL_USER": "/profile",
-    DEFAULT: "/dashboard", // Fallback route
-  } as const;
+type RoleRedirects = {
+  [key: string]: string;
+};
+
+const ROLE_REDIRECTS: RoleRedirects = {
+  "SUPER ADMIN": "/dashboard",
+  "COMPANY": "/company-portal",
+  "COMPANY_USER": "/user/dashboard",
+  "INDIVIDUAL_USER": "/profile",
+  DEFAULT: "/dashboard", // Fallback route
+} as const;
 
 export default function Page() {
   const [showPassword, setShowPassword] = useState(false);
@@ -121,51 +121,51 @@ export default function Page() {
         email: values.email.trim(),
         password: values.password
       };
-      
+
       const loginRQ = { ...trimmedValues };
       loginRQ.password = getEncryptedPassword(loginRQ.password);
-      
+
       if (!loginRQ.email) {
         setLoading(false);
         toastService.showErrorMessage(INVALID_EMAIL);
         return;
       }
-  
+
       console.log("Sending login request:", loginRQ); // Debug log
       const response = await onLogin(loginRQ);
       console.log("Login response:", response); // Debug log
-      
+
       const userData = cloneDeep(response.data);
       console.log("User data:", userData); // Debug log
-      
+
       // Store tokens and user data
       jwtService.setAccessToken(userData.accessToken);
       jwtService.setRefreshToken(userData.refreshToken);
       delete userData.accessToken;
       delete userData.refreshToken; // Fixed typo
-      
+
       jwtService.setLoginUser(userData);
       jwtService.onLoginSuccess(userData);
-  
+
       // Determine redirect path based on role
       const userRole = userData.roles?.[0] || '';
       console.log("User role:", userRole); // Debug log
       const redirectPath = ROLE_REDIRECTS[userRole] || ROLE_REDIRECTS.DEFAULT;
       console.log("Redirecting to:", redirectPath); // Debug log
-      
+
       toastService.showSuccessMessage("Login successful!");
       router.push(redirectPath);
-      
+
     } catch (error: any) {
       console.error("Login error:", error); // Detailed error logging
       setLoading(false);
-      
+
       if (error.response) {
         console.error("Error response data:", error.response.data); // Debug log
-        const errorMessage = error.response.data?.message || 
-          error.response.data?.error || 
+        const errorMessage = error.response.data?.message ||
+          error.response.data?.error ||
           "Login failed. Please try again.";
-        
+
         if (error.response.status === 401) {
           toastService.showErrorMessage("Invalid email or password");
         } else if (error.response.status === 403) {
@@ -188,7 +188,7 @@ export default function Page() {
   ) => {
     try {
       setLoading(true);
-      await onForgotPassword(values.email);
+      await onForgotPassword({ email: values.email, validate: true });
       setEmailForReset(values.email);
       setOtpSent(true);
       setForgotPasswordOpen(false);
@@ -208,7 +208,7 @@ export default function Page() {
       await onResetPassword({
         email: emailForReset,
         otp: values.otp,
-        newPassword: getEncryptedPassword(values.newPassword),
+        newPassword: values.newPassword,
       });
       toastService.showSuccessMessage("Password reset successfully");
       setResetPasswordOpen(false);
@@ -326,7 +326,7 @@ export default function Page() {
                   >
                     Forgot password?
                   </Button>
-                  
+
                   <Button
                     type="submit"
                     className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 px-8 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
