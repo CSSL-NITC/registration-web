@@ -11,6 +11,7 @@ import type { Registration } from "@/lib/mock-api/registrations"
 export default function RegistrationsPage() {
   const [registrations, setRegistrations] = useState<Registration[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     loadRegistrations()
@@ -18,11 +19,14 @@ export default function RegistrationsPage() {
 
   const loadRegistrations = async () => {
     setLoading(true)
+    setError(null)
     try {
       const data = await getRegistrations()
+      console.log("Registrations loaded:", data)
       setRegistrations(data)
     } catch (error) {
       console.error("Failed to load registrations:", error)
+      setError("Failed to load registrations. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -60,6 +64,20 @@ export default function RegistrationsPage() {
     verified: registrations.filter((r) => r.paymentStatus === "verified").length,
     pending: registrations.filter((r) => r.paymentStatus === "pending").length,
     failed: registrations.filter((r) => r.paymentStatus === "failed").length,
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Registrations</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={loadRegistrations} className="bg-blue-800 hover:bg-blue-900">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (

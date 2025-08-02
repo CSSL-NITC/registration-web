@@ -144,8 +144,15 @@ const mockRegistrations: Registration[] = [
 ]
 
 export const getRegistrations = async (): Promise<Registration[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 800))
-  return [...mockRegistrations]
+  console.log("getRegistrations called")
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 800))
+    console.log("getRegistrations returning:", mockRegistrations)
+    return [...mockRegistrations]
+  } catch (error) {
+    console.error("getRegistrations error:", error)
+    throw error
+  }
 }
 
 export const verifyPayment = async (id: string): Promise<Registration> => {

@@ -19,6 +19,7 @@ export function IframeViewer({ url, open, onClose }: IframeViewerProps) {
   const [iframeLoaded, setIframeLoaded] = useState(false)
 
   useEffect(() => {
+    console.log(url)
     if (open) {
       document.body.style.overflow = 'hidden'
       document.body.style.touchAction = 'none'

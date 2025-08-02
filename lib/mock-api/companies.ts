@@ -129,8 +129,15 @@ const mockEmployees: CompanyEmployee[] = [
 
 // API functions
 export const getCompanies = async (): Promise<Company[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  return mockCompanies
+  console.log("getCompanies called")
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 800))
+    console.log("getCompanies returning:", mockCompanies)
+    return [...mockCompanies]
+  } catch (error) {
+    console.error("getCompanies error:", error)
+    throw error
+  }
 }
 
 export const getCompanyById = async (id: string): Promise<Company | null> => {

@@ -25,9 +25,30 @@ export default function SettingsPage() {
     csslMemberDiscount: 20,
   })
 
-  const handleSave = () => {
-    // Save settings logic here
-    console.log("Settings saved:", settings)
+  const [saving, setSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle")
+
+  const handleSave = async () => {
+    setSaving(true)
+    setSaveStatus("idle")
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      console.log("Settings saved:", settings)
+      setSaveStatus("success")
+      
+      // Reset success status after 3 seconds
+      setTimeout(() => setSaveStatus("idle"), 3000)
+    } catch (error) {
+      console.error("Failed to save settings:", error)
+      setSaveStatus("error")
+      
+      // Reset error status after 3 seconds
+      setTimeout(() => setSaveStatus("idle"), 3000)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -38,9 +59,21 @@ export default function SettingsPage() {
           <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
           <p className="text-gray-600">Configure system preferences and application settings</p>
         </div>
-        <Button onClick={handleSave} className="bg-blue-800 hover:bg-blue-900">
-          Save Changes
-        </Button>
+        <div className="flex items-center space-x-2">
+          {saveStatus === "success" && (
+            <span className="text-green-600 text-sm">Settings saved successfully!</span>
+          )}
+          {saveStatus === "error" && (
+            <span className="text-red-600 text-sm">Failed to save settings</span>
+          )}
+          <Button 
+            onClick={handleSave} 
+            disabled={saving}
+            className="bg-blue-800 hover:bg-blue-900"
+          >
+            {saving ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
       </div>
 
       {/* Settings Tabs */}

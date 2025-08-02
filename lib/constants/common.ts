@@ -17,8 +17,8 @@ export const DASHBOARD_PAGE = "/dashboard";
 
 export const DashboardPages = {
   DASHBOARD: `${DASHBOARD_PAGE}`,
-  COMPANIES: `${DASHBOARD_PAGE}/companies`,
   REGISTRATIONS: `${DASHBOARD_PAGE}/registrations`,
+  COMPANIES: `${DASHBOARD_PAGE}/companies`,
   PAYMENTS: `${DASHBOARD_PAGE}/payments`,
   QR_CODES: `${DASHBOARD_PAGE}/qr-codes`,
   REPORTS: `${DASHBOARD_PAGE}/reports`,
