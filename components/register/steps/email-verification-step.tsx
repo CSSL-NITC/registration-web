@@ -60,7 +60,7 @@ export function EmailVerificationStep({ email, onNext, onBack, loading }: EmailV
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert className="border-slate-200 bg-slate-50">
-            <Shield className="h-4 w-4 text-slate-600" />
+            <Shield className="h-4 w-4 text-slate-600 dark:text-black" />
             <AlertDescription className="text-slate-800">
               Please check your email and enter the 6-digit verification code below.
             </AlertDescription>

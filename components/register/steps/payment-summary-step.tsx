@@ -166,7 +166,7 @@ export function PaymentSummaryStep({ formData, onPaymentComplete, onBack, loadin
           </div>
 
           <Alert className="border-slate-200 bg-slate-50">
-            <CheckCircle className="h-4 w-4 text-slate-600" />
+            <CheckCircle className="h-4 w-4 text-slate-600 dark:text-black" />
             <AlertDescription className="text-slate-800">
               After payment verification by admin, you will receive an invoice and QR code via email for conference
               entry at Shangri-La Hotel, Colombo.

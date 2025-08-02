@@ -155,7 +155,7 @@ export function IndividualRegistration() {
   }
 
   // discount and payment should go with this
-  const handlePaymentComplete = () => {
+  const handlePaymentComplete = async () => {
     const request: RegistrationRequest = {
       userType: PredefinedRole.INDIVIDUAL_USER,
       password: formData.password,
@@ -173,11 +173,22 @@ export function IndividualRegistration() {
 
     console.log(request);
 
-    onRegistrationInit(request)
-      .then(res => {
-        setRegistrationInitResponse(res.data);
-        setShowPaymentModal(true);
-      }).catch(() => { });
+    try {
+      setLoading(true); // Show loading state
+      const response = await onRegistrationInit(request);
+      setRegistrationInitResponse(response.data);
+      console.log("Initiate payment popup")
+      console.log(response.data);
+      setShowPaymentModal(true); // Now show the modal
+      // openPaymentModel(response.data?.responseData?.paymentPageUrl);
+      console.log("showPaymentModal set to true");
+    } catch (error) {
+      console.error("Payment initialization failed:", error);
+      toast.error("Failed to initialize payment");
+    } finally {
+      setLoading(false); // Hide loading state
+    }
+
   }
 
   if (step === 2) {
@@ -193,23 +204,34 @@ export function IndividualRegistration() {
 
   if (step === 3) {
     return (
-      <PaymentSummaryStep
-        formData={formData}
-        onPaymentComplete={handlePaymentComplete}
-        onBack={handleBackToForm}
-        loading={loading}
-      />
+      <>
+        <PaymentSummaryStep
+          formData={formData}
+          onPaymentComplete={handlePaymentComplete}
+          onBack={handleBackToForm}
+          loading={loading}
+        />
+        {showPaymentModal && registrationInitResponse?.responseData?.paymentPageUrl && (
+          <IframeViewer 
+            open={showPaymentModal}
+            url={registrationInitResponse.responseData.paymentPageUrl}
+            onClose={() => setShowPaymentModal(false)}
+          />
+        )}
+      </>
     )
   }
 
-  if (showPaymentModal && !!registrationInitResponse) {
-    return (
-      <IframeViewer 
-        url={registrationInitResponse.responseData.paymentPageUrl}
-        onClose={() => setShowPaymentModal(false)}
-      />
-    )
-  }
+  // if (showPaymentModal && registrationInitResponse?.responseData?.paymentPageUrl) {
+  //   console.log("Called payment popup")
+  //   console.log(registrationInitResponse.responseData.paymentPageUrl)
+  //   return (
+  //     <IframeViewer 
+  //       url={registrationInitResponse.responseData.paymentPageUrl}
+  //       onClose={() => setShowPaymentModal(false)}
+  //     />
+  //   )
+  // }
 
   return (
     <div className="max-w-4xl mx-auto font-['Roboto']">
